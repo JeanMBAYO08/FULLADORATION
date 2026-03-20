@@ -1,0 +1,335 @@
+/* Page expérience — Formulaire (nom + téléphone) */
+
+.experience {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+.experience-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.75rem;
+  width: 100%;
+  max-width: 380px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.experience-logo-link {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  margin-bottom: 0.25rem;
+}
+
+.experience-logo {
+  display: block;
+  width: 100%;
+  max-width: min(200px, 60vw);
+  height: auto;
+  object-fit: contain;
+  opacity: 0.9;
+  transition: opacity 0.25s;
+}
+
+.experience-logo-link:hover .experience-logo {
+  opacity: 1;
+}
+
+/* Formulaire */
+.experience-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  text-align: left;
+}
+
+.experience-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.experience-form label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+  letter-spacing: 0.02em;
+}
+
+.experience-form input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: 1rem;
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+  box-sizing: border-box;
+}
+
+.experience-form input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+[data-theme="light"] .experience-form input {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .experience-form input::placeholder {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.experience-form input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(224, 122, 95, 0.15);
+}
+
+[data-theme="light"] .experience-form input:focus {
+  box-shadow: 0 0 0 3px rgba(196, 92, 62, 0.12);
+}
+
+/* Champ téléphone : sélecteur pays (drapeau) intégré dans le champ */
+.phone-row {
+  display: flex;
+  align-items: stretch;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  overflow: visible;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.phone-row:focus-within {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(224, 122, 95, 0.15);
+}
+
+[data-theme="light"] .phone-row {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .phone-row:focus-within {
+  box-shadow: 0 0 0 3px rgba(196, 92, 62, 0.12);
+}
+
+/* Bloc drapeau + select (seul le drapeau est visible, le select est cliquable par-dessus) */
+.phone-select-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.75rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px 0 0 12px;
+  cursor: pointer;
+}
+
+[data-theme="light"] .phone-select-wrap {
+  border-right-color: rgba(0, 0, 0, 0.12);
+}
+
+.phone-select-wrap .phone-flag {
+  width: 1.5rem;
+  height: 1.1rem;
+  margin: 0;
+  border-radius: 2px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  pointer-events: none;
+}
+
+.phone-select-wrap .phone-select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-size: 0;
+  color: transparent;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  appearance: none;
+  opacity: 0;
+}
+
+.phone-select-wrap .phone-select:focus {
+  outline: none;
+}
+
+.phone-row .phone-select option {
+  font-size: 1rem;
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+/* Indicatif fixe + champ chiffres */
+.phone-input-wrap {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  border-radius: 0 12px 12px 0;
+}
+
+.phone-prefix {
+  flex-shrink: 0;
+  padding-left: 0.75rem;
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: 1rem;
+  color: var(--color-text);
+  opacity: 0.9;
+}
+
+.phone-zero {
+  flex-shrink: 0;
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: 1rem;
+  color: var(--color-text);
+  opacity: 0.9;
+}
+
+.phone-row .phone-input-wrap input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  padding: 0.85rem 1rem 0.85rem 0.35rem;
+}
+
+.phone-row .phone-input-wrap input:focus {
+  box-shadow: none;
+}
+
+.experience-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.5rem;
+  padding: 0.95rem 1.5rem;
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--color-accent);
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background 0.25s, transform 0.2s, box-shadow 0.25s;
+  box-shadow: 0 2px 12px rgba(224, 122, 95, 0.3);
+}
+
+.experience-submit:hover {
+  background: #c96a4e;
+  transform: scale(1.02);
+  box-shadow: 0 4px 20px rgba(224, 122, 95, 0.35);
+}
+
+.experience-submit:active {
+  transform: scale(0.98);
+}
+
+.experience-submit:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.experience-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.25rem;
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  transition: border-color 0.25s, background 0.25s, opacity 0.25s;
+  opacity: 0.85;
+}
+
+.experience-back:hover {
+  border-color: var(--color-accent);
+  background: rgba(224, 122, 95, 0.1);
+  opacity: 1;
+}
+
+[data-theme="light"] .experience-back {
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="light"] .experience-back:hover {
+  border-color: var(--color-accent);
+  background: rgba(196, 92, 62, 0.08);
+}
+
+/* Toast d'erreur moderne */
+.experience-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1.5rem;
+  transform: translateX(-50%);
+  z-index: 200;
+  pointer-events: none;
+}
+
+.experience-toast[hidden] {
+  display: none;
+}
+
+.experience-toast-inner {
+  max-width: min(360px, 90vw);
+  padding: 0.75rem 1rem;
+  border-radius: 999px;
+  background: rgba(20, 20, 20, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: var(--color-text);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
+  font-size: 0.86rem;
+  opacity: 0;
+  transform: translateX(-50%) translateY(16px);
+  animation: toast-in 0.25s ease-out forwards;
+}
+
+[data-theme="light"] .experience-toast-inner {
+  background: rgba(245, 242, 237, 0.98);
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+}
+
+.experience-toast-text {
+  margin: 0;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Full Adoration">
+  <title>Full Adoration — Accueil</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="navbar" role="banner">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="accueil.html" aria-label="Full Adoration — Accueil">
+        <img src="assets/ADORATION.png" alt="Full Adoration" class="navbar-logo" width="120" height="40">
+      </a>
+
+      <nav class="navbar-nav" aria-label="Navigation principale">
+        <button type="button" class="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false">
+          <span class="nav-toggle-bar"></span>
+          <span class="nav-toggle-bar"></span>
+          <span class="nav-toggle-bar"></span>
+        </button>
+        <ul class="nav-menu" id="nav-menu">
+          <li class="nav-item-toggle">
+            <button type="button" class="theme-toggle" aria-label="Basculer en mode clair" title="Mode clair / sombre">
+              <span class="theme-icon sun" aria-hidden="true">☀</span>
+              <span class="theme-icon moon" aria-hidden="true">☽</span>
+            </button>
+          </li>
+          <li><a class="nav-link" href="accueil.html">Accueil</a></li>
+          <li><a class="nav-link" href="#vision">Vision</a></li>
+          <li><a class="nav-link" href="#historique">Historique</a></li>
+          <li>
+            <button type="button" class="nav-link nav-link--with-badge" aria-label="Notifications programme" id="nav-programme-notif">
+              <span class="nav-bell" aria-hidden="true"><i class="fa-solid fa-bell"></i></span>
+              <span class="nav-badge" aria-hidden="true"></span>
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="nav-notif-panel" id="nav-notif-panel" aria-label="Centre de notifications" hidden>
+    <h2 class="nav-notif-title">Notifications</h2>
+    <ul class="nav-notif-list">
+      <li class="nav-notif-item" data-unread="true">
+        <p class="nav-notif-text">
+          Le programme détaillé de Full Adoration sera publié prochainement.
+        </p>
+        <a href="#programme" class="nav-notif-link">Voir la section programme</a>
+      </li>
+    </ul>
+  </section>
+
+  <main id="main" class="home" role="main">
+    <section class="hero" aria-label="Section d'accueil">
+      <div class="hero-bg" aria-hidden="true"></div>
+
+      <div class="hero-inner">
+        <div class="hero-media-left" aria-hidden="true">
+          <div class="hero-media-frame">
+            <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="assets/affiche.jpeg">
+              <source src="assets/mov.mp4" type="video/mp4">
+            </video>
+            <div class="hero-video-overlay" id="hero-video-overlay" aria-live="polite">
+              <div class="hero-overlay-scroll" aria-hidden="true">
+                <p class="hero-overlay-hello">hello</p>
+                <p class="hero-overlay-name" id="hero-overlay-name">Invité</p>
+                  <p class="hero-overlay-welcome-prefix">Bienvenue à</p>
+                  <p class="hero-overlay-brand">FULL ADORATION</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="poster" aria-label="Affiche">
+      <div class="poster-inner">
+        <div class="poster-slider" aria-label="Galerie Full Adoration">
+          <button type="button" class="poster-slider-btn poster-slider-btn--prev" id="poster-prev" aria-label="Image précédente">‹</button>
+          <div class="poster-track" id="poster-track">
+            <div class="poster-slide">
+              <img src="assets/slides/1x1.jpg" alt="Slide Full Adoration 1" class="poster-img" loading="lazy">
+            </div>
+            <div class="poster-slide">
+              <img src="assets/slides/1x1 joel.jpg" alt="Slide Full Adoration Joel" class="poster-img" loading="lazy">
+            </div>
+            <div class="poster-slide">
+              <img src="assets/slides/1x1 jon.jpg" alt="Slide Full Adoration Jon" class="poster-img" loading="lazy">
+            </div>
+          </div>
+          <button type="button" class="poster-slider-btn poster-slider-btn--next" id="poster-next" aria-label="Image suivante">›</button>
+        </div>
+        <p class="poster-subtitle-mobile">
+          Full Adoration est une célébration chrétienne qui ramène les cœurs au Christ.
+        </p>
+
+        <div class="poster-cta-wrap">
+          <button type="button" class="poster-cta-button" id="presence-open">
+            Réservez une place
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="vision" class="vision-section" aria-label="A propos de Full Adoration">
+      <div class="vision-inner">
+        <h2 class="vision-title">À propos</h2>
+        <div class="vision-row">
+          <p class="vision-text" id="vision-text">
+            La vision principale de Full Adoration est de gagner les âmes à Christ à travers la puissance transformatrice de l’adoration. Nous croyons que l’adoration est bien plus qu’un chant : c’est un puissant canal spirituel capable de toucher les cœurs, de conduire les hommes à Dieu, de guérir les vies brisées et de relever les âmes fatiguées.
+          </p>
+          <a
+            class="vision-more"
+            id="vision-more"
+            href="vision.html"
+            aria-label="Voir plus sur la page À propos"
+          >
+            Voir plus
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="mobile-bottom-nav" aria-label="Navigation mobile">
+    <a class="mobile-bottom-link mobile-bottom-link--active" href="accueil.html" aria-current="page">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-house"></i></span>
+      <span class="mobile-bottom-text">Accueil</span>
+    </a>
+    <a class="mobile-bottom-link" href="vision.html">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-regular fa-eye"></i></span>
+      <span class="mobile-bottom-text">Vision</span>
+    </a>
+    <a class="mobile-bottom-link" href="#programme">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-calendar-days"></i></span>
+      <span class="mobile-bottom-text">Programme</span>
+    </a>
+    <a class="mobile-bottom-link" href="messagerie.html">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-regular fa-message"></i></span>
+      <span class="mobile-bottom-text">Messagerie</span>
+    </a>
+    <a class="mobile-bottom-link" href="#menu-avance" aria-label="Menu avancé">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-ellipsis-vertical"></i></span>
+      <span class="mobile-bottom-text">Plus</span>
+    </a>
+  </nav>
+
+  <button type="button" class="chat-launcher" aria-label="Ouvrir le chat">
+    <img src="assets/mascotte.png" alt="Chat Full Adoration" class="chat-launcher-logo">
+  </button>
+
+  <div class="chat-backdrop" hidden></div>
+
+  <section class="presence-modal" aria-label="Confirmation de présence" hidden>
+    <div class="presence-modal-inner">
+      <header class="presence-header">
+        <h2 class="presence-title">Je confirme ma présence</h2>
+        <button type="button" class="presence-close" aria-label="Fermer la confirmation">×</button>
+      </header>
+      <form class="presence-form" id="presence-form">
+        <div class="presence-field">
+          <label for="presence-origin">Comment avez-vous connu cet évènement&nbsp;?</label>
+          <select id="presence-origin" name="origin" required>
+            <option value="" disabled selected>Choisissez une option</option>
+            <option value="paroisse">Annonce à la paroisse</option>
+            <option value="reseaux">Réseaux sociaux</option>
+            <option value="amis">Par un ami / une connaissance</option>
+            <option value="eglise">Communauté / groupe de prière</option>
+            <option value="autre">Autre</option>
+          </select>
+        </div>
+
+        <div class="presence-field">
+          <label for="presence-impression">Vos impressions</label>
+          <select id="presence-impression" name="impression" required>
+            <option value="" disabled selected>Choisissez une option</option>
+            <option value="tres-enthousiaste">Très enthousiaste</option>
+            <option value="interesse">Intéressé(e)</option>
+            <option value="curieux">Curieux(se), je découvre</option>
+            <option value="encore-hesitant">Encore un peu hésitant(e)</option>
+          </select>
+        </div>
+
+        <div class="presence-field">
+          <label for="presence-attentes">Vos attentes</label>
+          <select id="presence-attentes" name="attentes" required>
+            <option value="" disabled selected>Choisissez une option</option>
+            <option value="rencontre-christ">Rencontre plus profonde avec le Christ</option>
+            <option value="guérison">Guérison / restauration intérieure</option>
+            <option value="adoration">Temps fort d’adoration</option>
+            <option value="communion-fraternelle">Communion fraternelle</option>
+            <option value="discernement">Lumière / discernement pour une situation</option>
+          </select>
+        </div>
+
+        <div class="presence-field">
+          <label for="presence-intention">Intention de prière particulière</label>
+          <textarea id="presence-intention" name="intention" rows="3" placeholder="Confiez ici une intention de prière précise (facultatif)"></textarea>
+        </div>
+
+        <div class="presence-field">
+          <fieldset class="presence-fieldset">
+            <legend>Avez-vous un invité&nbsp;?</legend>
+            <div class="presence-options">
+              <label class="presence-option">
+                <input type="radio" name="invite" value="oui">
+                <span>Oui</span>
+              </label>
+              <label class="presence-option">
+                <input type="radio" name="invite" value="non" checked>
+                <span>Non</span>
+              </label>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="presence-actions">
+          <button type="button" class="presence-secondary" id="presence-cancel">Annuler</button>
+          <button type="submit" class="presence-submit">Envoyer</button>
+        </div>
+
+        <p class="presence-note">Vos réponses nous aident à mieux vous servir et à préparer Full Adoration dans la prière.</p>
+      </form>
+    </div>
+  </section>
+
+  <section class="chat-window" aria-label="Assistant virtuel Full Adoration" hidden>
+    <header class="chat-header">
+      <div class="chat-header-title">
+        <img src="assets/mascotte.png" alt="Assistant virtuel Full Adoration" class="chat-header-logo">
+        <span>Assistant virtuel Full Adoration</span>
+      </div>
+      <button type="button" class="chat-close" aria-label="Fermer le chat">×</button>
+    </header>
+    <div class="chat-messages" id="chat-messages" aria-live="polite"></div>
+    <form class="chat-input-row" id="chat-form">
+      <label class="sr-only" for="chat-input">Votre message</label>
+      <input
+        type="text"
+        id="chat-input"
+        class="chat-input"
+        autocomplete="off"
+        placeholder="Écrivez votre message..."
+        required
+      >
+      <button type="submit" class="chat-send">Envoyer</button>
+    </form>
+  </section>
+  
+  <footer class="site-footer" role="contentinfo">
+    <div class="site-footer-inner">
+      <div class="site-footer-brand">
+        <img src="assets/ADORATION.png" alt="Full Adoration" class="site-footer-logo">
+        <p class="site-footer-text">
+          Full Adoration — un temps pour revenir au cœur à cœur avec le Christ.
+        </p>
+      </div>
+      <div class="site-footer-columns">
+        <div class="site-footer-col">
+          <h3 class="site-footer-title">Navigation</h3>
+          <ul class="site-footer-links">
+            <li><a href="#vision">Vision</a></li>
+            <li><a href="#historique">Historique</a></li>
+          </ul>
+        </div>
+        <div class="site-footer-col">
+          <h3 class="site-footer-title">À propos de l'évènement</h3>
+          <ul class="site-footer-links">
+            <li><a href="#lieu">Lieu</a></li>
+            <li><a href="#programme">Programme</a></li>
+          </ul>
+        </div>
+        <div class="site-footer-col">
+          <h3 class="site-footer-title">Contact</h3>
+          <p class="site-footer-text-small">
+            Pour toute question ou intention de prière, écrivez-nous.
+          </p>
+          <a href="mailto:contact@full-adoration.org" class="site-footer-contact">contact@full-adoration.org</a>
+        </div>
+      </div>
+      <p class="site-footer-copy">© <span id="footer-year"></span> Full Adoration. Tous droits réservés.</p>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

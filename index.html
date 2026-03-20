@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Full Adoration">
+  <title>Full Adoration</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <button type="button" class="theme-toggle" aria-label="Basculer en mode clair" title="Mode clair / sombre">
+    <span class="theme-icon sun" aria-hidden="true">☀</span>
+    <span class="theme-icon moon" aria-hidden="true">☽</span>
+  </button>
+
+  <main id="main" class="landing" role="main">
+    <div class="landing-content">
+      <div class="landing-logo" aria-hidden="true">
+        <img src="assets/ADORATION.png" alt="Full Adoration" class="landing-logo-img" width="320" height="120" fetchpriority="high">
+      </div>
+      <section class="landing-countdown" aria-label="Compte à rebours avant Full Adoration">
+        <div class="landing-countdown-grid">
+          <div class="landing-countdown-item">
+            <span class="landing-countdown-value" id="countdown-days">00</span>
+            <span class="landing-countdown-unit">Jours</span>
+          </div>
+          <div class="landing-countdown-item">
+            <span class="landing-countdown-value" id="countdown-hours">00</span>
+            <span class="landing-countdown-unit">Heures</span>
+          </div>
+          <div class="landing-countdown-item">
+            <span class="landing-countdown-value" id="countdown-minutes">00</span>
+            <span class="landing-countdown-unit">Minutes</span>
+          </div>
+          <div class="landing-countdown-item">
+            <span class="landing-countdown-value landing-countdown-value--seconds" id="countdown-seconds">00</span>
+            <span class="landing-countdown-unit">Secondes</span>
+          </div>
+        </div>
+      </section>
+      <a href="experience.html" class="landing-cta" id="cta-stabilite">Vivez la stabilité et le grand exploit</a>
+    </div>
+  </main>
+
+  <nav class="mobile-bottom-nav" aria-label="Navigation mobile">
+    <a class="mobile-bottom-link mobile-bottom-link--active" href="accueil.html" aria-current="page">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-house"></i></span>
+      <span class="mobile-bottom-text">Accueil</span>
+    </a>
+    <a class="mobile-bottom-link" href="vision.html">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-regular fa-eye"></i></span>
+      <span class="mobile-bottom-text">Vision</span>
+    </a>
+    <a class="mobile-bottom-link" href="accueil.html#programme">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-calendar-days"></i></span>
+      <span class="mobile-bottom-text">Programme</span>
+    </a>
+    <a class="mobile-bottom-link" href="messagerie.html">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-regular fa-message"></i></span>
+      <span class="mobile-bottom-text">Messagerie</span>
+    </a>
+    <a class="mobile-bottom-link" href="accueil.html#menu-avance" aria-label="Menu avancé">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-ellipsis-vertical"></i></span>
+      <span class="mobile-bottom-text">Plus</span>
+    </a>
+  </nav>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

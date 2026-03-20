@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Full Adoration — Messagerie">
+  <title>Full Adoration — Messagerie</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/messagerie.css">
+</head>
+<body>
+  <button type="button" class="theme-toggle" aria-label="Basculer en mode clair" title="Mode clair / sombre">
+    <span class="theme-icon sun" aria-hidden="true">☀</span>
+    <span class="theme-icon moon" aria-hidden="true">☽</span>
+  </button>
+
+  <main id="main" class="messagerie" role="main">
+    <div class="messagerie-shell">
+      <header class="messagerie-header">
+        <a href="accueil.html" class="messagerie-logo-link" aria-label="Retour à l'accueil">
+          <img src="assets/ADORATION.png" alt="Full Adoration" class="messagerie-logo">
+        </a>
+        <div class="messagerie-header-text">
+          <h1 class="messagerie-title">Messagerie</h1>
+          <p class="messagerie-subtitle">
+            Un espace de discussion entre les membres de Full Adoration.
+          </p>
+        </div>
+      </header>
+
+      <section class="messagerie-layout" aria-label="Messagerie entre membres">
+        <section class="messagerie-thread" aria-label="Messages de la conversation">
+          <div class="messagerie-thread-inner">
+            <header class="messagerie-thread-header">
+              <div class="messagerie-thread-title-block">
+                <h2 class="messagerie-thread-title">Groupe Full Adoration</h2>
+                <p class="messagerie-thread-description">
+                  Espace de chat communautaire&nbsp;: vos messages pourront, plus tard, être visibles par les autres membres.
+                </p>
+              </div>
+              <div class="messagerie-profile">
+                <label for="messagerie-nom" class="messagerie-profile-label">Votre nom dans le chat</label>
+                <input
+                  type="text"
+                  id="messagerie-nom"
+                  class="messagerie-profile-input"
+                  placeholder="Ex. Marie, Frère Jean..."
+                >
+              </div>
+            </header>
+
+            <div class="messagerie-messages" id="messagerie-messages" aria-live="polite"></div>
+
+            <form class="messagerie-input-row" id="messagerie-form">
+              <label class="sr-only" for="messagerie-input">Votre message</label>
+              <textarea
+                id="messagerie-input"
+                class="messagerie-input"
+                rows="2"
+                placeholder="Écrivez ici votre message ou votre intention..."
+                required
+              ></textarea>
+              <button type="submit" class="messagerie-send">Envoyer</button>
+            </form>
+          </div>
+        </section>
+      </section>
+    </div>
+  </main>
+
+  <nav class="mobile-bottom-nav" aria-label="Navigation mobile">
+    <a class="mobile-bottom-link" href="accueil.html">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-house"></i></span>
+      <span class="mobile-bottom-text">Accueil</span>
+    </a>
+    <a class="mobile-bottom-link" href="vision.html">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-regular fa-eye"></i></span>
+      <span class="mobile-bottom-text">Vision</span>
+    </a>
+    <a class="mobile-bottom-link" href="accueil.html#programme">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-calendar-days"></i></span>
+      <span class="mobile-bottom-text">Programme</span>
+    </a>
+    <a class="mobile-bottom-link mobile-bottom-link--active" href="messagerie.html" aria-current="page">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-regular fa-message"></i></span>
+      <span class="mobile-bottom-text">Messagerie</span>
+    </a>
+    <a class="mobile-bottom-link" href="accueil.html#menu-avance" aria-label="Menu avancé">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-ellipsis-vertical"></i></span>
+      <span class="mobile-bottom-text">Plus</span>
+    </a>
+  </nav>
+
+  <script src="js/app.js"></script>
+  <script src="js/messagerie.js"></script>
+</body>
+</html>
+
