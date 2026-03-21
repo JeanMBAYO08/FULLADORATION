@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Full Adoration — Programme">
+  <title>Full Adoration — Programme</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/programme.css">
+</head>
+<body>
+  <button type="button" class="theme-toggle" aria-label="Basculer en mode clair" title="Mode clair / sombre">
+    <span class="theme-icon sun" aria-hidden="true">☀</span>
+    <span class="theme-icon moon" aria-hidden="true">☽</span>
+  </button>
+
+  <main id="main" class="programme" role="main">
+    <section class="programme-shell" aria-label="Programme de Full Adoration">
+      <header class="programme-topbar">
+        <h1 class="programme-page-title">Programme</h1>
+
+        <button type="button" class="programme-share" id="programme-share" aria-label="Partager le programme" title="Partager">
+          <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
+        </button>
+      </header>
+
+      <div class="programme-box-grid" aria-label="Événements du programme">
+        <article class="programme-box" id="programme-box-restauration" aria-label="Mercredi 15, Jeudi 16, Vendredi 17 avril — 15H — Église MERS">
+          <div class="programme-box-inner">
+            <img
+              src="assets/icon/mers.png"
+              alt="Fond Église MERS"
+              class="programme-box-icon"
+              loading="lazy"
+            >
+            <div class="programme-box-meta">
+              <div class="programme-box-meta-row">
+                <i class="fa-solid fa-location-dot programme-box-meta-icon" aria-hidden="true"></i>
+                <p class="programme-box-kind programme-box-meta-text">Église MERS</p>
+              </div>
+
+              <div class="programme-box-meta-row">
+                <i class="fa-regular fa-calendar-days programme-box-meta-icon" aria-hidden="true"></i>
+                <p class="programme-box-dates programme-box-meta-text">Du 15 au 17 Avril</p>
+              </div>
+
+              <div class="programme-box-time-row">
+                <i class="fa-solid fa-clock programme-box-clock-icon" aria-hidden="true"></i>
+                <p class="programme-box-time">15H</p>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="programme-box" id="programme-box-lupopo" aria-label="Dimanche 19 avril — Stade Lupopo">
+          <div class="programme-box-inner">
+            <img
+              src="assets/icon/stade.png"
+              alt="Icône Stade Lupopo"
+              class="programme-box-icon"
+              loading="lazy"
+            >
+            <div class="programme-box-meta">
+              <div class="programme-box-meta-row">
+                <i class="fa-solid fa-location-dot programme-box-meta-icon" aria-hidden="true"></i>
+                <p class="programme-box-kind programme-box-meta-text">Stade Lupopo</p>
+              </div>
+
+              <div class="programme-box-meta-row">
+                <i class="fa-regular fa-calendar-days programme-box-meta-icon" aria-hidden="true"></i>
+                <p class="programme-box-dates programme-box-meta-text">Dim 19 avril</p>
+              </div>
+
+              <div class="programme-box-time-row">
+                <i class="fa-solid fa-clock programme-box-clock-icon" aria-hidden="true"></i>
+                <p class="programme-box-time">15H</p>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="programme-box programme-box--calendar" id="programme-box-calendar" aria-label="Calendrier du programme">
+          <div class="programme-box-inner programme-calendar">
+            <div class="programme-calendar-top">
+              <div class="programme-calendar-month" id="programme-calendar-month" aria-live="polite"></div>
+              <div class="programme-calendar-hint" aria-hidden="true">Clique une date</div>
+            </div>
+
+            <div class="programme-calendar-weekdays" aria-hidden="true">
+              <span>Lun</span>
+              <span>Mar</span>
+              <span>Mer</span>
+              <span>Jeu</span>
+              <span>Ven</span>
+              <span>Sam</span>
+              <span>Dim</span>
+            </div>
+
+            <div class="programme-calendar-grid" id="programme-calendar-grid" role="grid" aria-label="Dates du mois"></div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal détail programme -->
+  <section
+    id="programme-modal"
+    class="programme-modal"
+    hidden
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="programme-modal-title"
+  >
+    <button
+      type="button"
+      class="programme-modal-backdrop"
+      aria-label="Fermer"
+      id="programme-modal-backdrop"
+    ></button>
+
+    <div class="programme-modal-card" role="document">
+      <div class="programme-modal-media" aria-hidden="true">
+        <img
+          id="programme-modal-photo"
+          class="programme-modal-photo"
+          src="assets/participates/JK.jpeg"
+          alt=""
+          loading="lazy"
+        >
+      </div>
+      <header class="programme-modal-header">
+        <h2 class="programme-modal-title" id="programme-modal-title">
+          <i
+            class="fa-solid fa-microphone-lines programme-modal-speaker-icon"
+            aria-hidden="true"
+          ></i>
+          <span class="programme-modal-speaker-name">Joel KABWE</span>
+        </h2>
+        <button type="button" class="programme-modal-close" id="programme-modal-close" aria-label="Fermer">×</button>
+      </header>
+
+      <footer class="programme-modal-footer">
+        <div class="programme-modal-row">
+          <i class="fa-solid fa-location-dot programme-modal-icon" aria-hidden="true"></i>
+          <p class="programme-modal-text" id="programme-modal-lieu">—</p>
+        </div>
+
+        <div class="programme-modal-row">
+          <i class="fa-regular fa-calendar-days programme-modal-icon" aria-hidden="true"></i>
+          <p class="programme-modal-text" id="programme-modal-date">—</p>
+        </div>
+
+        <div class="programme-modal-row">
+          <i class="fa-solid fa-clock programme-modal-icon" aria-hidden="true"></i>
+          <p class="programme-modal-text" id="programme-modal-heure">—</p>
+        </div>
+      </footer>
+
+      <div class="programme-modal-content" aria-label="Détails du programme">
+        <p class="programme-modal-lorem">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent libero, sed cursus ante.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <nav class="mobile-bottom-nav" aria-label="Navigation mobile">
+    <a class="mobile-bottom-link" href="accueil.html">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-house"></i></span>
+      <span class="mobile-bottom-text">Accueil</span>
+    </a>
+    <a class="mobile-bottom-link" href="vision.html">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-regular fa-eye"></i></span>
+      <span class="mobile-bottom-text">Vision</span>
+    </a>
+    <a class="mobile-bottom-link mobile-bottom-link--active mobile-bottom-link--programme" href="programme.html" aria-current="page" aria-label="Programme">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-calendar-days"></i></span>
+      <span class="mobile-bottom-text">Programme</span>
+    </a>
+    <a class="mobile-bottom-link" href="messagerie.html">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-regular fa-message"></i></span>
+      <span class="mobile-bottom-text">Messagerie</span>
+    </a>
+    <a class="mobile-bottom-link" href="accueil.html#menu-avance" aria-label="Menu avancé">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-bars"></i></span>
+      <span class="mobile-bottom-text">Plus</span>
+    </a>
+  </nav>
+
+  <script src="js/app.js"></script>
+  <script>
+    (function () {
+      var shareBtn = document.getElementById('programme-share');
+      if (!shareBtn) return;
+
+      var shareText =
+        'Programme Full Adoration\\n\\n' +
+        'Mer 15 avril — 15H — Église Mission Évangélique : La restauration\\n' +
+        'Jeu 16 avril — 15H — Église Mission Évangélique : La restauration\\n' +
+        'Ven 17 avril — 15H — Église Mission Évangélique : La restauration\\n' +
+        'Dim 19 avril — Stade Lupopo';
+
+      function doShare() {
+        try {
+          if (navigator.share) {
+            navigator.share({ title: 'Programme Full Adoration', text: shareText, url: window.location.href });
+            return;
+          }
+        } catch (e) {}
+
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(shareText + '\\n\\n' + window.location.href);
+          }
+        } catch (err) {}
+      }
+
+      shareBtn.addEventListener('click', doShare);
+
+      // Mettre en évidence la box la plus pertinente (today/next)
+      var boxRest = document.getElementById('programme-box-restauration');
+      var boxLup = document.getElementById('programme-box-lupopo');
+      if (!boxRest || !boxLup) return;
+
+      var now = new Date();
+      var year = now.getMonth() <= 3 ? now.getFullYear() : now.getFullYear() + 1; // avril=3
+      var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+      var d15 = new Date(year, 3, 15);
+      var d16 = new Date(year, 3, 16);
+      var d17 = new Date(year, 3, 17);
+      var d19 = new Date(year, 3, 19);
+
+      function mark(el, cls) {
+        el.classList.remove('programme-box--today');
+        el.classList.remove('programme-box--next');
+        el.classList.add(cls);
+      }
+
+      // today
+      if (today.getTime() === d15.getTime() || today.getTime() === d16.getTime() || today.getTime() === d17.getTime()) {
+        mark(boxRest, 'programme-box--today');
+      } else if (today.getTime() === d19.getTime()) {
+        mark(boxLup, 'programme-box--today');
+      } else {
+        // next
+        var next = null;
+        var candidates = [d15, d16, d17, d19].sort(function (a, b) { return a.getTime() - b.getTime(); });
+        for (var i = 0; i < candidates.length; i++) {
+          if (candidates[i].getTime() >= today.getTime()) {
+            next = candidates[i];
+            break;
+          }
+        }
+        if (!next) next = d15;
+
+        if (next.getTime() === d19.getTime()) mark(boxLup, 'programme-box--next');
+        else mark(boxRest, 'programme-box--next');
+      }
+    })();
+
+    // Calendrier (avril) : met en avant 15/16/17/19
+    (function () {
+      var monthEl = document.getElementById('programme-calendar-month');
+      var grid = document.getElementById('programme-calendar-grid');
+      var boxRest = document.getElementById('programme-box-restauration');
+      var boxLup = document.getElementById('programme-box-lupopo');
+      if (!monthEl || !grid || !boxRest || !boxLup) return;
+
+      // Gestion modal
+      (function initModal() {
+        var modalEl = document.getElementById('programme-modal');
+        var closeBtn = document.getElementById('programme-modal-close');
+        var backdropBtn = document.getElementById('programme-modal-backdrop');
+        if (!modalEl || !closeBtn || !backdropBtn) return;
+
+        function closeModal() {
+          modalEl.hidden = true;
+        }
+
+        closeBtn.addEventListener('click', closeModal);
+        backdropBtn.addEventListener('click', closeModal);
+
+        document.addEventListener('keydown', function (e) {
+          if (!modalEl || modalEl.hidden) return;
+          if (e && e.key === 'Escape') {
+            closeModal();
+          }
+        });
+      })();
+
+      var now = new Date();
+      var targetMonth = 3; // avril
+      var year = now.getMonth() <= targetMonth ? now.getFullYear() : now.getFullYear() + 1;
+
+      var relevantDays = [15, 16, 17, 19];
+      var dayToBox = {
+        15: boxRest,
+        16: boxRest,
+        17: boxRest,
+        19: boxLup
+      };
+
+      function pad2(n) {
+        return n < 10 ? '0' + n : '' + n;
+      }
+
+      function sameDay(a, b) {
+        return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+      }
+
+      function monthLabelFr(y, m) {
+        var months = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+        return (months[m] || 'avril') + ' ' + y;
+      }
+
+      function dayNameToIndexFr(dayIndex) {
+        // 0=dim..6=sam => Lun=0..Dim=6
+        return (dayIndex + 6) % 7;
+      }
+
+      function renderCalendar() {
+        grid.innerHTML = '';
+
+        var first = new Date(year, targetMonth, 1);
+        var firstDay = first.getDay(); // 0..6
+        var startCol = dayNameToIndexFr(firstDay);
+
+        var daysInMonth = new Date(year, targetMonth + 1, 0).getDate();
+        monthEl.textContent = monthLabelFr(year, targetMonth);
+
+        // blancs avant le 1er
+        for (var i = 0; i < startCol; i++) {
+          var empty = document.createElement('button');
+          empty.type = 'button';
+          empty.className = 'programme-cal-day programme-cal-day--empty';
+          empty.textContent = '';
+          empty.tabIndex = -1;
+          empty.setAttribute('aria-hidden', 'true');
+          grid.appendChild(empty);
+        }
+
+        var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        // calcul prochaine date pertinente (>= aujourd'hui)
+        var candidates = relevantDays
+          .map(function (d) { return new Date(year, targetMonth, d); })
+          .sort(function (a, b) { return a.getTime() - b.getTime(); });
+
+        var next = null;
+        for (var k = 0; k < candidates.length; k++) {
+          if (candidates[k].getTime() >= new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime()) {
+            next = candidates[k];
+            break;
+          }
+        }
+        if (!next) next = candidates[0];
+        var nextDay = next.getDate();
+
+        for (var d = 1; d <= daysInMonth; d++) {
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'programme-cal-day';
+          btn.textContent = String(d);
+          btn.setAttribute('data-program-day', String(d));
+
+          var isRelevant = relevantDays.indexOf(d) !== -1;
+          if (isRelevant) btn.classList.add('programme-cal-day--relevant');
+
+          var thisDate = new Date(year, targetMonth, d);
+          if (sameDay(thisDate, now)) btn.classList.add('programme-cal-day--today');
+
+          if (!sameDay(thisDate, now) && isRelevant && d === nextDay) {
+            btn.classList.add('programme-cal-day--next');
+          }
+
+          btn.setAttribute('aria-label', 'Date ' + d + '/' + pad2(targetMonth + 1) + '/' + year);
+
+          btn.addEventListener('click', function (ev) {
+            var dd = parseInt(ev.currentTarget.textContent, 10);
+            if (!dd || !dayToBox[dd]) return;
+            dayToBox[dd].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            dayToBox[dd].style.outline = '2px solid rgba(224, 122, 95, 0.65)';
+            dayToBox[dd].style.outlineOffset = '6px';
+            window.setTimeout(function () {
+              dayToBox[dd].style.outline = '';
+              dayToBox[dd].style.outlineOffset = '';
+            }, 1200);
+
+            // Ouvrir le modal détail (15/16/17/19)
+            try {
+              var modalEl = document.getElementById('programme-modal');
+              var lieuEl = document.getElementById('programme-modal-lieu');
+              var dateEl = document.getElementById('programme-modal-date');
+              var heureEl = document.getElementById('programme-modal-heure');
+              var titleEl = document.getElementById('programme-modal-title');
+              if (!modalEl || !lieuEl || !dateEl || !heureEl || !titleEl) return;
+
+              var photoEl = document.getElementById('programme-modal-photo');
+
+              if (photoEl) {
+                var photos = {
+                  15: 'assets/participates/JK.jpeg',
+                  16: 'assets/participates/JG.jpeg',
+                  17: 'assets/participates/jsl.jpg',
+                  19: 'assets/participates/JSL.png'
+                };
+                if (photos[dd]) photoEl.src = photos[dd];
+              }
+
+              var dateObj = new Date(year, targetMonth, dd);
+              var weekday = ['Dim.', 'Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.'][dateObj.getDay()] || '';
+              var labelDate = weekday + ' ' + dd + ' avril';
+
+              var lieu = '';
+              var sub = '';
+              if (dd === 19) {
+                lieu = 'Stade Lupopo';
+                sub = 'Rencontre / célébration';
+              } else {
+                lieu = 'Église MERS';
+                sub = 'La restauration';
+              }
+
+              lieuEl.textContent = lieu;
+              dateEl.textContent = labelDate;
+              heureEl.textContent = '15H';
+              // Le titre est fixe (Joel KABWE / Pasteur)
+
+              modalEl.hidden = false;
+            } catch (err) {}
+          });
+
+          grid.appendChild(btn);
+        }
+      }
+
+      renderCalendar();
+
+      // Chenillard : on fait défiler l'effet sur 15/16/17/19
+      (function () {
+        var seq = [15, 16, 17, 19];
+        var buttons = seq
+          .map(function (d) {
+            return grid.querySelector('.programme-cal-day[data-program-day="' + d + '"]');
+          })
+          .filter(function (el) {
+            return !!el;
+          });
+
+        if (!buttons.length) return;
+
+        var idx = 0;
+
+        function tick() {
+          for (var i = 0; i < buttons.length; i++) {
+            if (!buttons[i]) continue;
+            buttons[i].classList.remove('programme-cal-day--chenillard');
+          }
+          if (buttons[idx]) buttons[idx].classList.add('programme-cal-day--chenillard');
+          idx = (idx + 1) % buttons.length;
+        }
+
+        tick();
+        window.setInterval(tick, 450);
+      })();
+    })();
+  </script>
+</body>
+</html>
+

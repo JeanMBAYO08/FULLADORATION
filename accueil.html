@@ -34,13 +34,17 @@
           <li><a class="nav-link" href="accueil.html">Accueil</a></li>
           <li><a class="nav-link" href="#vision">Vision</a></li>
           <li><a class="nav-link" href="#historique">Historique</a></li>
-          <li>
-            <button type="button" class="nav-link nav-link--with-badge" aria-label="Notifications programme" id="nav-programme-notif">
-              <span class="nav-bell" aria-hidden="true"><i class="fa-solid fa-bell"></i></span>
-              <span class="nav-badge" aria-hidden="true"></span>
-            </button>
-          </li>
         </ul>
+
+        <button
+          type="button"
+          class="nav-link nav-link--with-badge"
+          aria-label="Notifications programme"
+          id="nav-programme-notif"
+        >
+          <span class="nav-bell" aria-hidden="true"><i class="fa-solid fa-bell"></i></span>
+          <span class="nav-badge" aria-hidden="true"></span>
+        </button>
       </nav>
     </div>
   </header>
@@ -52,7 +56,7 @@
         <p class="nav-notif-text">
           Le programme détaillé de Full Adoration sera publié prochainement.
         </p>
-        <a href="#programme" class="nav-notif-link">Voir la section programme</a>
+        <a href="messagerie.html" class="nav-notif-link">Voir les annonces</a>
       </li>
     </ul>
   </section>
@@ -139,7 +143,7 @@
       <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-regular fa-eye"></i></span>
       <span class="mobile-bottom-text">Vision</span>
     </a>
-    <a class="mobile-bottom-link" href="#programme">
+    <a class="mobile-bottom-link mobile-bottom-link--programme" href="programme.html" aria-label="Programme">
       <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-calendar-days"></i></span>
       <span class="mobile-bottom-text">Programme</span>
     </a>
@@ -148,16 +152,10 @@
       <span class="mobile-bottom-text">Messagerie</span>
     </a>
     <a class="mobile-bottom-link" href="#menu-avance" aria-label="Menu avancé">
-      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-ellipsis-vertical"></i></span>
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-bars"></i></span>
       <span class="mobile-bottom-text">Plus</span>
     </a>
   </nav>
-
-  <button type="button" class="chat-launcher" aria-label="Ouvrir le chat">
-    <img src="assets/mascotte.png" alt="Chat Full Adoration" class="chat-launcher-logo">
-  </button>
-
-  <div class="chat-backdrop" hidden></div>
 
   <section class="presence-modal" aria-label="Confirmation de présence" hidden>
     <div class="presence-modal-inner">
@@ -231,29 +229,6 @@
       </form>
     </div>
   </section>
-
-  <section class="chat-window" aria-label="Assistant virtuel Full Adoration" hidden>
-    <header class="chat-header">
-      <div class="chat-header-title">
-        <img src="assets/mascotte.png" alt="Assistant virtuel Full Adoration" class="chat-header-logo">
-        <span>Assistant virtuel Full Adoration</span>
-      </div>
-      <button type="button" class="chat-close" aria-label="Fermer le chat">×</button>
-    </header>
-    <div class="chat-messages" id="chat-messages" aria-live="polite"></div>
-    <form class="chat-input-row" id="chat-form">
-      <label class="sr-only" for="chat-input">Votre message</label>
-      <input
-        type="text"
-        id="chat-input"
-        class="chat-input"
-        autocomplete="off"
-        placeholder="Écrivez votre message..."
-        required
-      >
-      <button type="submit" class="chat-send">Envoyer</button>
-    </form>
-  </section>
   
   <footer class="site-footer" role="contentinfo">
     <div class="site-footer-inner">
@@ -264,20 +239,6 @@
         </p>
       </div>
       <div class="site-footer-columns">
-        <div class="site-footer-col">
-          <h3 class="site-footer-title">Navigation</h3>
-          <ul class="site-footer-links">
-            <li><a href="#vision">Vision</a></li>
-            <li><a href="#historique">Historique</a></li>
-          </ul>
-        </div>
-        <div class="site-footer-col">
-          <h3 class="site-footer-title">À propos de l'évènement</h3>
-          <ul class="site-footer-links">
-            <li><a href="#lieu">Lieu</a></li>
-            <li><a href="#programme">Programme</a></li>
-          </ul>
-        </div>
         <div class="site-footer-col">
           <h3 class="site-footer-title">Contact</h3>
           <p class="site-footer-text-small">
@@ -291,5 +252,158 @@
   </footer>
 
   <script src="js/app.js"></script>
+  <script type="text/plain">
+    (function () {
+      var grid = document.getElementById('programme-calendar-grid');
+      var monthEl = document.getElementById('programme-calendar-month');
+      if (!grid || !monthEl) return;
+
+      var now = new Date();
+      // avril = 3 (0-based)
+      var targetMonth = 3;
+      // Si on est avant avril, on affiche l'année courante. Sinon, année suivante.
+      var year = now.getMonth() <= targetMonth ? now.getFullYear() : now.getFullYear() + 1;
+
+      var relevantDays = [15, 16, 17, 19];
+      var dayToCardId = {
+        15: 'programme-time-15',
+        16: 'programme-time-16',
+        17: 'programme-time-17',
+        19: 'programme-time-19'
+      };
+
+      function pad2(n) {
+        return n < 10 ? '0' + n : '' + n;
+      }
+
+      function sameDay(a, b) {
+        return (
+          a.getFullYear() === b.getFullYear() &&
+          a.getMonth() === b.getMonth() &&
+          a.getDate() === b.getDate()
+        );
+      }
+
+      function monthLabelFr(y, m) {
+        var months = [
+          'janvier',
+          'février',
+          'mars',
+          'avril',
+          'mai',
+          'juin',
+          'juillet',
+          'août',
+          'septembre',
+          'octobre',
+          'novembre',
+          'décembre'
+        ];
+        return (months[m] || 'avril') + ' ' + y;
+      }
+
+      function dayNameToIndexFr(dayIndex) {
+        // JS: 0=dim..6=sam => Lun=0..Dim=6
+        return (dayIndex + 6) % 7;
+      }
+
+      function render() {
+        grid.innerHTML = '';
+
+        var first = new Date(year, targetMonth, 1);
+        var firstDay = first.getDay(); // 0=dim..6=sam
+        var startCol = dayNameToIndexFr(firstDay); // 0=Lun
+
+        var daysInMonth = new Date(year, targetMonth + 1, 0).getDate();
+        monthEl.textContent = monthLabelFr(year, targetMonth);
+
+        // Case vide avant le 1er du mois
+        for (var i = 0; i < startCol; i++) {
+          var empty = document.createElement('button');
+          empty.type = 'button';
+          empty.className = 'programme-day programme-day--empty';
+          empty.setAttribute('aria-hidden', 'true');
+          empty.tabIndex = -1;
+          empty.textContent = '';
+          grid.appendChild(empty);
+        }
+
+        var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        for (var d = 1; d <= daysInMonth; d++) {
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'programme-day';
+          btn.textContent = String(d);
+
+          var relevant = relevantDays.indexOf(d) !== -1;
+          if (relevant) btn.classList.add('programme-day--relevant');
+
+          var thisDate = new Date(year, targetMonth, d);
+          if (sameDay(thisDate, now) && year === now.getFullYear() && targetMonth === now.getMonth()) {
+            btn.classList.add('programme-day--today');
+          }
+
+          btn.setAttribute('aria-label', 'Date ' + d + '/' + pad2(targetMonth + 1) + '/' + year);
+
+          btn.addEventListener('click', function (ev) {
+            var day = parseInt(ev.currentTarget.textContent, 10);
+            if (!day || !dayToCardId[day]) return;
+            var card = document.getElementById(dayToCardId[day]);
+            if (!card) return;
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            window.setTimeout(function () {
+              card.style.outline = '';
+              card.style.outlineOffset = '';
+            }, 1200);
+            card.style.outline = '2px solid rgba(224, 122, 95, 0.65)';
+            card.style.outlineOffset = '6px';
+          });
+
+          grid.appendChild(btn);
+        }
+      }
+
+      function animateNext() {
+        var relevantDates = relevantDays
+          .map(function (d) {
+            return new Date(year, targetMonth, d);
+          })
+          .sort(function (a, b) {
+            return a.getTime() - b.getTime();
+          });
+
+        // prochaine date >= aujourd'hui (journée)
+        var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        var next = null;
+        for (var i = 0; i < relevantDates.length; i++) {
+          if (relevantDates[i].getTime() >= today.getTime()) {
+            next = relevantDates[i];
+            break;
+          }
+        }
+        if (!next) next = relevantDates[0];
+
+        var nextDay = next.getDate();
+        var buttons = grid.querySelectorAll('.programme-day');
+        buttons.forEach(function (b) {
+          if (!b || !b.textContent) return;
+          var n = parseInt(String(b.textContent).trim(), 10);
+          if (!n) return;
+          if (b.classList.contains('programme-day--today')) return;
+          if (n === nextDay) b.classList.add('programme-day--next');
+          else b.classList.remove('programme-day--next');
+        });
+      }
+
+      render();
+      animateNext();
+
+      // Recalcul toutes les 2 minutes (si la page reste ouverte)
+      window.setInterval(function () {
+        animateNext();
+      }, 120000);
+    })();
+  </script>
 </body>
 </html>

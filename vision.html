@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body class="page-vision">
   <button type="button" class="theme-toggle" aria-label="Basculer en mode clair" title="Mode clair / sombre">
     <span class="theme-icon sun" aria-hidden="true">☀</span>
     <span class="theme-icon moon" aria-hidden="true">☽</span>
@@ -30,9 +30,13 @@
           <article class="vision-card" aria-label="1. Le salut des âmes">
             <div class="vision-card-content">
               <div class="vision-card-head">
-                <span class="vision-card-index">1</span>
-                <i class="fa-solid fa-cross vision-card-icon" aria-hidden="true"></i>
-                <h3 class="vision-card-title">Le salut des âmes</h3>
+                <div class="vision-card-index-row">
+                  <span class="vision-card-index">1</span>
+                </div>
+                <div class="vision-card-meta-row">
+                  <i class="fa-solid fa-cross vision-card-icon" aria-hidden="true"></i>
+                  <h3 class="vision-card-title">Le salut des âmes</h3>
+                </div>
               </div>
               <div class="vision-card-body">
                 <div class="vision-card-text-row">
@@ -48,16 +52,20 @@
               </div>
             </div>
             <div class="vision-card-media" aria-hidden="true">
-              <img src="assets/slides/1x1.jpg" alt="Image salut des âmes" class="vision-card-img" loading="lazy">
+              <img src="assets/photos/1.jpeg" alt="Image salut des âmes" class="vision-card-img" loading="lazy">
             </div>
           </article>
 
           <article class="vision-card" aria-label="2. La restauration des âmes">
             <div class="vision-card-content">
               <div class="vision-card-head">
-                <span class="vision-card-index">2</span>
-                <i class="fa-solid fa-heart-pulse vision-card-icon" aria-hidden="true"></i>
-                <h3 class="vision-card-title">La restauration des âmes</h3>
+                <div class="vision-card-index-row">
+                  <span class="vision-card-index">2</span>
+                </div>
+                <div class="vision-card-meta-row">
+                  <i class="fa-solid fa-heart-pulse vision-card-icon" aria-hidden="true"></i>
+                  <h3 class="vision-card-title">La restauration des âmes</h3>
+                </div>
               </div>
               <div class="vision-card-body">
                 <div class="vision-card-text-row">
@@ -73,16 +81,20 @@
               </div>
             </div>
             <div class="vision-card-media" aria-hidden="true">
-              <img src="assets/slides/1x1 joel.jpg" alt="Image restauration des âmes" class="vision-card-img" loading="lazy">
+              <img src="assets/photos/2.jpeg" alt="Image restauration des âmes" class="vision-card-img" loading="lazy">
             </div>
           </article>
 
           <article class="vision-card" aria-label="3. La recharge des vies">
             <div class="vision-card-content">
               <div class="vision-card-head">
-                <span class="vision-card-index">3</span>
-                <i class="fa-solid fa-battery-full vision-card-icon" aria-hidden="true"></i>
-                <h3 class="vision-card-title">La recharge des vies</h3>
+                <div class="vision-card-index-row">
+                  <span class="vision-card-index">3</span>
+                </div>
+                <div class="vision-card-meta-row">
+                  <i class="fa-solid fa-battery-full vision-card-icon" aria-hidden="true"></i>
+                  <h3 class="vision-card-title">La recharge des vies</h3>
+                </div>
               </div>
               <div class="vision-card-body">
                 <div class="vision-card-text-row">
@@ -98,7 +110,7 @@
               </div>
             </div>
             <div class="vision-card-media" aria-hidden="true">
-              <img src="assets/slides/1x1 jon.jpg" alt="Image recharge des vies" class="vision-card-img" loading="lazy">
+              <img src="assets/photos/3.jpeg" alt="Image recharge des vies" class="vision-card-img" loading="lazy">
             </div>
           </article>
         </div>
@@ -119,7 +131,7 @@
       <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-regular fa-eye"></i></span>
       <span class="mobile-bottom-text">Vision</span>
     </a>
-    <a class="mobile-bottom-link" href="accueil.html#programme">
+    <a class="mobile-bottom-link mobile-bottom-link--programme" href="programme.html" aria-label="Programme">
       <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-calendar-days"></i></span>
       <span class="mobile-bottom-text">Programme</span>
     </a>
@@ -128,7 +140,7 @@
       <span class="mobile-bottom-text">Messagerie</span>
     </a>
     <a class="mobile-bottom-link" href="accueil.html#menu-avance" aria-label="Menu avancé">
-      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-ellipsis-vertical"></i></span>
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-bars"></i></span>
       <span class="mobile-bottom-text">Plus</span>
     </a>
   </nav>
@@ -156,6 +168,19 @@
             cardEl.classList.toggle('vision-card--expanded', expanded);
           }
         });
+      });
+    })();
+
+    // Vision : utiliser exactement les images 1, 2, 3 (assets/slides)
+    (function () {
+      var imgs = document.querySelectorAll('.vision-card-img');
+      if (!imgs || !imgs.length) return;
+
+      var ordered = ['assets/photos/1.jpeg', 'assets/photos/2.jpeg', 'assets/photos/3.jpeg'];
+
+      imgs.forEach(function (imgEl, idx) {
+        if (!ordered[idx]) return;
+        imgEl.src = ordered[idx];
       });
     })();
   </script>

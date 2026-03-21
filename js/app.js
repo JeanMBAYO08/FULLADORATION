@@ -170,11 +170,24 @@
     var posterSlides = posterTrack.querySelectorAll('.poster-slide');
     var posterAutoTimer = null;
 
+    function setPosterActive(index) {
+      if (!posterSlides || !posterSlides.length) return;
+      posterSlides.forEach(function (s) {
+        s.classList.remove('poster-slide--active', 'poster-slide--next');
+      });
+      var active = index % posterSlides.length;
+      if (active < 0) active = posterSlides.length - 1;
+      var next = (active + 1) % posterSlides.length;
+      if (posterSlides[active]) posterSlides[active].classList.add('poster-slide--active');
+      if (posterSlides[next]) posterSlides[next].classList.add('poster-slide--next');
+    }
+
     function goToPoster(index) {
       if (!posterSlides.length) return;
       if (index < 0) index = posterSlides.length - 1;
       if (index >= posterSlides.length) index = 0;
       posterIndex = index;
+      setPosterActive(posterIndex);
       // Affichage "1.5 slide" : 1 image complète + la suivante à moitié
       var slideWidth = posterTrack.clientWidth * (2 / 3);
       var offset = posterIndex * slideWidth;
@@ -183,10 +196,12 @@
 
     posterPrev.addEventListener('click', function () {
       goToPoster(posterIndex - 1);
+      startPosterAuto();
     });
 
     posterNext.addEventListener('click', function () {
       goToPoster(posterIndex + 1);
+      startPosterAuto();
     });
 
     function startPosterAuto() {
@@ -203,6 +218,9 @@
     window.addEventListener('resize', function () {
       goToPoster(posterIndex);
     });
+
+    // Etat initial
+    setPosterActive(posterIndex);
   }
 
   // Compte à rebours vers le 19 avril 2026
@@ -577,12 +595,11 @@
   if (navProgrammeNotif) {
     navProgrammeNotif.addEventListener('click', function (e) {
       e.stopPropagation();
-      var isHidden = !navNotifPanel || navNotifPanel.hasAttribute('hidden');
-      if (isHidden) {
-        openNotifPanel();
-      } else {
-        closeNotifPanel();
-      }
+      // L'icône de notification renvoie vers la page Programme
+      // au lieu d'ouvrir le panneau notifications.
+      try {
+        window.location.href = 'programme.html';
+      } catch (err) {}
     });
   }
 
@@ -621,7 +638,7 @@
         } else {
           message = "En fin de journée, préparez votre cœur pour Full Adoration.";
         }
-        addNotification(message, '#programme');
+        addNotification(message, 'programme.html');
       }
     });
   }
