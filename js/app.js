@@ -7,63 +7,215 @@
   'use strict';
 
   const THEME_KEY = 'full-adoration-theme';
+  const LANG_KEY = 'full-adoration-lang';
+  const HISTORY_KEY = 'full-adoration-history';
   const html = document.documentElement;
-  const themeToggle = document.querySelector('.theme-toggle');
   const navToggle = document.querySelector('.nav-toggle');
   const navMenu = document.querySelector('.nav-menu');
   const navbar = document.querySelector('.navbar');
 
-  function getPreferredTheme() {
+  /** Applique data-theme selon la clé : dark | light | system | (absent = système) */
+  function applyThemeToDOM() {
     const stored = localStorage.getItem(THEME_KEY);
-    if (stored === 'dark' || stored === 'light') return stored;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    let resolved;
+    if (stored === 'system' || stored === null || stored === undefined) {
+      resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    } else if (stored === 'dark' || stored === 'light') {
+      resolved = stored;
+    } else {
+      resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    html.setAttribute('data-theme', resolved);
   }
 
-  function setTheme(theme) {
-    html.setAttribute('data-theme', theme);
-    localStorage.setItem(THEME_KEY, theme);
-    if (themeToggle) {
-      themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Basculer en mode clair' : 'Basculer en mode sombre');
+  /** dark | light | system — utilisé par la page Paramètres (#settings-theme) */
+  function setThemeMode(mode) {
+    if (mode === 'system') {
+      localStorage.setItem(THEME_KEY, 'system');
+    } else if (mode === 'dark' || mode === 'light') {
+      localStorage.setItem(THEME_KEY, mode);
+    }
+    applyThemeToDOM();
+  }
+
+  try {
+    var langStored = localStorage.getItem(LANG_KEY);
+    if (
+      langStored === 'en' ||
+      langStored === 'fr' ||
+      langStored === 'sw' ||
+      langStored === 'ln' ||
+      langStored === 'pt'
+    ) {
+      document.documentElement.lang = langStored;
+    }
+  } catch (eLang) {}
+
+  applyThemeToDOM();
+
+  // Historique : enregistrer cette page tôt (si le script va plus loin sans erreur, doublon évité par filtre URL)
+  (function recordVisitEarly() {
+    try {
+      var pageTitle = document.title || '';
+      var baseUrl = window.location.href.split('#')[0];
+      var raw = localStorage.getItem(HISTORY_KEY);
+      var list = [];
+      if (raw) list = JSON.parse(raw);
+      if (!Array.isArray(list)) list = [];
+      list = list.filter(function (x) {
+        return x && x.url !== baseUrl;
+      });
+      list.unshift({ url: baseUrl, title: pageTitle, t: Date.now() });
+      if (list.length > 40) list = list.slice(0, 40);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(list));
+    } catch (e) {}
+  })();
+
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+    const stored = localStorage.getItem(THEME_KEY);
+    if (stored === 'system' || stored === null) {
+      html.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+    }
+  });
+
+  /** Pop-up global — même style partout (remplace alert()) */
+  var appModalEl = null;
+  var appModalLastFocus = null;
+  var appModalOnCloseCallback = null;
+
+  function onAppModalKeydown(ev) {
+    if (ev.key === 'Escape') {
+      ev.preventDefault();
+      closeAppModal();
     }
   }
 
-  setTheme(getPreferredTheme());
+  function closeAppModal() {
+    if (!appModalEl || appModalEl.hasAttribute('hidden')) return;
+    appModalEl.setAttribute('hidden', '');
+    document.body.classList.remove('app-pop-open');
+    document.removeEventListener('keydown', onAppModalKeydown);
+    var cb = appModalOnCloseCallback;
+    appModalOnCloseCallback = null;
+    if (appModalLastFocus && typeof appModalLastFocus.focus === 'function') {
+      try {
+        appModalLastFocus.focus();
+      } catch (e) {}
+    }
+    appModalLastFocus = null;
+    if (typeof cb === 'function') {
+      try {
+        cb();
+      } catch (e2) {}
+    }
+  }
 
-  if (themeToggle) {
-    themeToggle.addEventListener('click', function () {
-      const current = html.getAttribute('data-theme') || 'dark';
-      setTheme(current === 'dark' ? 'light' : 'dark');
+  function ensureAppModal() {
+    if (appModalEl) return appModalEl;
+    appModalEl = document.getElementById('app-modal');
+    if (appModalEl && document.getElementById('app-modal-ok')) return appModalEl;
+    appModalEl = document.createElement('div');
+    appModalEl.id = 'app-modal';
+    appModalEl.className = 'app-pop';
+    appModalEl.setAttribute('hidden', '');
+    appModalEl.innerHTML =
+      '<div class="app-pop__backdrop" id="app-modal-backdrop" aria-hidden="true"></div>' +
+      '<div class="app-pop__panel" role="alertdialog" aria-modal="true" aria-labelledby="app-modal-title" aria-describedby="app-modal-body">' +
+      '<div class="app-pop__icon app-pop__icon--info" id="app-modal-icon" aria-hidden="true"><i class="fa-solid fa-circle-exclamation"></i></div>' +
+      '<h2 id="app-modal-title" class="app-pop__title"></h2>' +
+      '<div id="app-modal-body" class="app-pop__text"></div>' +
+      '<button type="button" class="app-pop__btn" id="app-modal-ok">OK</button>' +
+      '</div>';
+    document.body.appendChild(appModalEl);
+    var okBtn = document.getElementById('app-modal-ok');
+    var bd = document.getElementById('app-modal-backdrop');
+    if (okBtn) okBtn.addEventListener('click', closeAppModal);
+    if (bd) bd.addEventListener('click', closeAppModal);
+    return appModalEl;
+  }
+
+  /**
+   * @param {Object} opts
+   * @param {string} [opts.title]
+   * @param {string} [opts.message] texte brut
+   * @param {string} [opts.messageHtml] HTML (contenu maîtrisé uniquement)
+   * @param {string} [opts.okLabel]
+   * @param {'info'|'success'|'error'} [opts.variant]
+   * @param {function} [opts.onClose] après fermeture (OK, fond, Échap)
+   */
+  function showAppModal(opts) {
+    opts = opts || {};
+    ensureAppModal();
+    var titleEl = document.getElementById('app-modal-title');
+    var bodyEl = document.getElementById('app-modal-body');
+    var iconWrap = document.getElementById('app-modal-icon');
+    var okBtn = document.getElementById('app-modal-ok');
+    var variant = opts.variant || 'info';
+    var iconClass = variant === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation';
+    if (iconWrap) {
+      iconWrap.innerHTML = '<i class="fa-solid ' + iconClass + '"></i>';
+      iconWrap.className = 'app-pop__icon app-pop__icon--' + variant;
+    }
+    if (titleEl) titleEl.textContent = opts.title != null ? opts.title : 'Information';
+    if (bodyEl) {
+      if (opts.messageHtml) {
+        bodyEl.innerHTML = opts.messageHtml;
+      } else {
+        bodyEl.innerHTML = '';
+        var p = document.createElement('p');
+        p.textContent = opts.message || '';
+        bodyEl.appendChild(p);
+      }
+    }
+    if (okBtn) okBtn.textContent = opts.okLabel || 'OK';
+    appModalOnCloseCallback = typeof opts.onClose === 'function' ? opts.onClose : null;
+    appModalLastFocus = document.activeElement;
+    appModalEl.removeAttribute('hidden');
+    document.body.classList.add('app-pop-open');
+    document.addEventListener('keydown', onAppModalKeydown);
+    window.requestAnimationFrame(function () {
+      if (okBtn) {
+        try {
+          okBtn.focus();
+        } catch (e) {}
+      }
     });
   }
 
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
-    if (!localStorage.getItem(THEME_KEY)) setTheme(e.matches ? 'dark' : 'light');
-  });
+  window.showAppModal = showAppModal;
+  window.closeAppModal = closeAppModal;
 
-  // Masquer / afficher la navbar en fonction du scroll
+  // Masquer / afficher la navbar en fonction du scroll (throttle requestAnimationFrame)
   var lastScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
   var navbarHidden = false;
+  var scrollRaf = 0;
 
-  window.addEventListener('scroll', function () {
-    if (!navbar) return;
-    var currentY = window.pageYOffset || document.documentElement.scrollTop || 0;
+  window.addEventListener(
+    'scroll',
+    function () {
+      if (!navbar) return;
+      if (scrollRaf) return;
+      scrollRaf = window.requestAnimationFrame(function () {
+        scrollRaf = 0;
+        var currentY = window.pageYOffset || document.documentElement.scrollTop || 0;
 
-    // Si on défile vers le bas et qu'on n'est pas en haut de page, on cache la navbar
-    if (currentY > lastScrollY && currentY > 24) {
-      if (!navbarHidden) {
-        navbar.classList.add('navbar--hidden');
-        navbarHidden = true;
-      }
-    } else {
-      // Si on remonte, on l'affiche à nouveau
-      if (navbarHidden) {
-        navbar.classList.remove('navbar--hidden');
-        navbarHidden = false;
-      }
-    }
+        if (currentY > lastScrollY && currentY > 24) {
+          if (!navbarHidden) {
+            navbar.classList.add('navbar--hidden');
+            navbarHidden = true;
+          }
+        } else {
+          if (navbarHidden) {
+            navbar.classList.remove('navbar--hidden');
+            navbarHidden = false;
+          }
+        }
 
-    lastScrollY = currentY;
-  });
+        lastScrollY = currentY;
+      });
+    },
+    { passive: true }
+  );
 
   if (navToggle && navMenu) {
     navToggle.addEventListener('click', function () {
@@ -582,23 +734,53 @@
     });
   }
 
+  /** Même pop-up global (.app-pop) que le formulaire d’inscription (experience.html) */
+  function showPresenceFormErrorModal() {
+    try {
+      showAppModal({
+        title: 'Champs requis',
+        messageHtml:
+          '<p><strong>Origine</strong>, <strong>impressions</strong> et <strong>attentes</strong> : sélectionnez chaque liste.</p>',
+        variant: 'error'
+      });
+    } catch (err) {}
+  }
+
   if (presenceForm) {
     presenceForm.addEventListener('submit', function (e) {
       e.preventDefault();
+      var originEl = document.getElementById('presence-origin');
+      var impressionEl = document.getElementById('presence-impression');
+      var attentesEl = document.getElementById('presence-attentes');
+      var allFilled =
+        originEl &&
+        impressionEl &&
+        attentesEl &&
+        String(originEl.value || '').trim() !== '' &&
+        String(impressionEl.value || '').trim() !== '' &&
+        String(attentesEl.value || '').trim() !== '';
+      var html5Ok = presenceForm.checkValidity && presenceForm.checkValidity();
+      if (!allFilled || !html5Ok) {
+        showPresenceFormErrorModal();
+        return;
+      }
       closePresence();
       try {
-        alert('Merci pour votre confirmation de présence. Nous nous réjouissons de vous retrouver à Full Adoration.');
-      } catch (err) {}
+        showAppModal({
+          title: 'Merci',
+          message: 'Présence enregistrée. À bientôt à Full Adoration.',
+          variant: 'success'
+        });
+      } catch (err2) {}
     });
   }
 
   if (navProgrammeNotif) {
     navProgrammeNotif.addEventListener('click', function (e) {
       e.stopPropagation();
-      // L'icône de notification renvoie vers la page Programme
-      // au lieu d'ouvrir le panneau notifications.
+      // L'icône de notification renvoie vers la messagerie
       try {
-        window.location.href = 'programme.html';
+        window.location.href = 'messagerie.html';
       } catch (err) {}
     });
   }
@@ -638,11 +820,464 @@
         } else {
           message = "En fin de journée, préparez votre cœur pour Full Adoration.";
         }
-        addNotification(message, 'programme.html');
+        addNotification(message, 'messagerie.html');
       }
     });
   }
 
   // Vérification toutes les 30 secondes
   setInterval(checkScheduledNotifications, 30000);
+
+  var AVATAR_KEY = 'full-adoration-avatar';
+  var PHONE_KEY = 'full-adoration-phone';
+
+  /** Préremplit correctement les champs : ajoute + si le numéro est stocké sans (E.164). */
+  function normalizeStoredPhoneDisplay(raw) {
+    if (raw == null || raw === '') return '';
+    var s = String(raw).trim().replace(/\s/g, '');
+    if (!s) return '';
+    if (s.charAt(0) === '+') return s;
+    var d = s.replace(/\D/g, '');
+    if (d.length >= 9) return '+' + d;
+    return String(raw).trim();
+  }
+
+  var PRESERVE_LOCAL_KEYS = [
+    THEME_KEY,
+    LANG_KEY,
+    'full-adoration-name',
+    AVATAR_KEY,
+    PHONE_KEY
+  ];
+
+  function clearAppCache() {
+    try {
+      sessionStorage.clear();
+    } catch (e1) {}
+    try {
+      var keys = Object.keys(localStorage);
+      for (var i = 0; i < keys.length; i++) {
+        if (PRESERVE_LOCAL_KEYS.indexOf(keys[i]) === -1) {
+          localStorage.removeItem(keys[i]);
+        }
+      }
+    } catch (e2) {}
+    if (window.caches && window.caches.keys) {
+      window.caches.keys().then(function (names) {
+        names.forEach(function (n) {
+          caches.delete(n);
+        });
+      }).catch(function () {});
+    }
+    try {
+      var lngAlert = document.documentElement.lang || 'fr';
+      var cacheMsg = {
+        fr: 'Cache effacé (thème, langue, prénom, téléphone et photo conservés). Rechargement…',
+        en: 'Cache cleared (theme, language, name, phone and photo kept). Reloading…',
+        sw: 'Akiba imefutwa (mandhari, lugha, jina, nambari na picha zimehifadhiwa). Ukurasa unapakia tena…',
+        ln: 'Cache ebimami (thème, monoko, téléphone, nkombo mpe sika). Page ekozongela…',
+        pt: 'Cache limpo (tema, idioma, nome, telefone e foto mantidos). A recarregar…'
+      };
+      showAppModal({
+        title: 'Cache',
+        message: cacheMsg[lngAlert] || cacheMsg.fr,
+        variant: 'success',
+        onClose: function () {
+          try {
+            window.location.reload();
+          } catch (e4) {}
+        }
+      });
+    } catch (e3) {
+      try {
+        window.location.reload();
+      } catch (e4) {}
+    }
+  }
+
+  function initSettingsPage() {
+    var root = document.getElementById('menu-avance');
+    if (!root) return;
+
+    var themeSelect = document.getElementById('settings-theme');
+    var langSelect = document.getElementById('settings-lang');
+    var historyList = document.getElementById('settings-history-list');
+    var btnClearHistory = document.getElementById('settings-clear-history');
+    var btnClearCache = document.getElementById('settings-clear-cache');
+
+    var avatarImg = document.getElementById('settings-avatar-img');
+    var avatarInitials = document.getElementById('settings-avatar-initials');
+    var avatarTrigger = document.getElementById('settings-avatar-trigger');
+    var avatarInput = document.getElementById('settings-avatar-input');
+    var avatarRemove = document.getElementById('settings-avatar-remove');
+    var profileNameInput = document.getElementById('settings-profile-name');
+    var profilePhoneInput = document.getElementById('settings-profile-phone');
+    var profileSaveBtn = document.getElementById('settings-profile-save');
+    var DEFAULT_MASCOT_SRC = 'assets/mascotte.png';
+
+    function getInitialsFromName(name) {
+      var s = (name || '').trim();
+      if (!s) return '?';
+      var parts = s.split(/\s+/).filter(Boolean);
+      if (parts.length >= 2) {
+        return (parts[0][0] + parts[1][0]).toUpperCase().slice(0, 2);
+      }
+      return s.slice(0, 2).toUpperCase();
+    }
+
+    function refreshAvatarDisplay() {
+      if (!avatarImg || !avatarInitials) return;
+      var data;
+      try {
+        data = localStorage.getItem(AVATAR_KEY);
+      } catch (e) {
+        data = null;
+      }
+      var name = '';
+      try {
+        name = localStorage.getItem('full-adoration-name') || '';
+      } catch (e2) {
+        name = '';
+      }
+      avatarImg.onerror = null;
+
+      if (data && String(data).indexOf('data:image') === 0) {
+        avatarImg.classList.remove('settings-avatar-img--default');
+        avatarImg.src = data;
+        avatarImg.hidden = false;
+        avatarInitials.hidden = true;
+        avatarImg.alt = '';
+        if (avatarRemove) avatarRemove.hidden = false;
+      } else {
+        avatarImg.classList.add('settings-avatar-img--default');
+        avatarImg.src = DEFAULT_MASCOT_SRC;
+        avatarImg.hidden = false;
+        avatarInitials.hidden = true;
+        avatarImg.alt = 'Mascotte Full Adoration';
+        if (avatarRemove) avatarRemove.hidden = true;
+        avatarImg.onerror = function () {
+          avatarImg.onerror = null;
+          avatarImg.classList.remove('settings-avatar-img--default');
+          avatarImg.hidden = true;
+          avatarImg.removeAttribute('src');
+          avatarInitials.hidden = false;
+          avatarInitials.textContent = getInitialsFromName(name);
+        };
+      }
+    }
+
+    function resizeImageToDataUrl(srcDataUrl, maxDim, quality, callback) {
+      var img = new Image();
+      img.onload = function () {
+        var w = img.naturalWidth || img.width;
+        var h = img.naturalHeight || img.height;
+        var scale = Math.min(1, maxDim / Math.max(w, h, 1));
+        var cw = Math.max(1, Math.round(w * scale));
+        var ch = Math.max(1, Math.round(h * scale));
+        var canvas = document.createElement('canvas');
+        canvas.width = cw;
+        canvas.height = ch;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) {
+          callback(null);
+          return;
+        }
+        ctx.drawImage(img, 0, 0, cw, ch);
+        try {
+          callback(canvas.toDataURL('image/jpeg', quality));
+        } catch (e) {
+          callback(null);
+        }
+      };
+      img.onerror = function () {
+        callback(null);
+      };
+      img.src = srcDataUrl;
+    }
+
+    if (avatarTrigger && avatarInput) {
+      avatarTrigger.addEventListener('click', function () {
+        avatarInput.click();
+      });
+    }
+
+    if (avatarInput) {
+      avatarInput.addEventListener('change', function () {
+        var file = avatarInput.files && avatarInput.files[0];
+        avatarInput.value = '';
+        if (!file || !file.type || file.type.indexOf('image') !== 0) return;
+        var reader = new FileReader();
+        reader.onload = function (ev) {
+          var raw = ev.target && ev.target.result;
+          if (!raw) return;
+          resizeImageToDataUrl(String(raw), 320, 0.82, function (dataUrl) {
+            if (!dataUrl) {
+              try {
+                showAppModal({
+                  title: 'Photo',
+                  message:
+                    (document.documentElement.lang || 'fr').indexOf('en') === 0
+                      ? 'Image unreadable. Try another file.'
+                      : 'Image illisible. Essayez un autre fichier.',
+                  variant: 'error'
+                });
+              } catch (e) {}
+              return;
+            }
+            try {
+              localStorage.setItem(AVATAR_KEY, dataUrl);
+            } catch (e2) {
+              try {
+                showAppModal({
+                  title: 'Photo',
+                  message:
+                    (document.documentElement.lang || 'fr').indexOf('en') === 0
+                      ? 'File too large. Choose a smaller image.'
+                      : 'Fichier trop lourd. Choisissez une image plus légère.',
+                  variant: 'error'
+                });
+              } catch (e3) {}
+              return;
+            }
+            refreshAvatarDisplay();
+          });
+        };
+        reader.onerror = function () {};
+        try {
+          reader.readAsDataURL(file);
+        } catch (e) {}
+      });
+    }
+
+    if (avatarRemove) {
+      avatarRemove.addEventListener('click', function () {
+        try {
+          localStorage.removeItem(AVATAR_KEY);
+        } catch (e) {}
+        refreshAvatarDisplay();
+      });
+    }
+
+    if (profileNameInput) {
+      try {
+        profileNameInput.value = localStorage.getItem('full-adoration-name') || '';
+      } catch (e) {}
+      profileNameInput.addEventListener('input', function () {
+        refreshAvatarDisplay();
+      });
+    }
+
+    function saveProfile() {
+      if (profileNameInput) {
+        var v = profileNameInput.value.trim();
+        try {
+          if (v) localStorage.setItem('full-adoration-name', v);
+          else localStorage.removeItem('full-adoration-name');
+        } catch (e) {}
+      }
+      if (profilePhoneInput) {
+        var p = normalizeStoredPhoneDisplay(profilePhoneInput.value.trim());
+        try {
+          if (p) {
+            localStorage.setItem(PHONE_KEY, p);
+            profilePhoneInput.value = p;
+          } else localStorage.removeItem(PHONE_KEY);
+        } catch (e2) {}
+      }
+      refreshAvatarDisplay();
+    }
+
+    if (profilePhoneInput) {
+      try {
+        profilePhoneInput.value = normalizeStoredPhoneDisplay(localStorage.getItem(PHONE_KEY)) || '';
+      } catch (e) {}
+    }
+
+    if (profileSaveBtn) {
+      profileSaveBtn.addEventListener('click', function () {
+        saveProfile();
+        try {
+          var lng = localStorage.getItem(LANG_KEY) || 'fr';
+          var msg =
+            lng === 'en'
+              ? 'Saved.'
+              : lng === 'sw'
+                ? 'Imehifadhiwa.'
+                : lng === 'ln'
+                  ? 'Ebakisami.'
+                  : lng === 'pt'
+                    ? 'Guardado.'
+                    : 'Enregistré.';
+          showAppModal({
+            title:
+              lng === 'en'
+                ? 'Profile'
+                : lng === 'sw'
+                  ? 'Wasifu'
+                  : lng === 'ln'
+                    ? 'Profil'
+                    : lng === 'pt'
+                      ? 'Perfil'
+                      : 'Profil',
+            message: msg,
+            variant: 'success'
+          });
+        } catch (e) {}
+      });
+    }
+
+    refreshAvatarDisplay();
+
+    var i18n = {
+      fr: {
+        emptyHistory: 'Aucune page enregistrée pour le moment.',
+        clearHistoryDone: 'Effacé.',
+        cacheDone: 'Cache vidé.'
+      },
+      en: {
+        emptyHistory: 'No pages recorded yet.',
+        clearHistoryDone: 'Cleared.',
+        cacheDone: 'Cache cleared.'
+      },
+      sw: {
+        emptyHistory: 'Hakuna ukurasa uliorekodiwa bado.',
+        clearHistoryDone: 'Imefutwa.',
+        cacheDone: 'Akiba imefutwa.'
+      },
+      ln: {
+        emptyHistory: 'Ba pages te ezali na liste sikoyo.',
+        clearHistoryDone: 'Elongolami.',
+        cacheDone: 'Cache elongolami.'
+      },
+      pt: {
+        emptyHistory: 'Nenhuma página registada por agora.',
+        clearHistoryDone: 'Limpo.',
+        cacheDone: 'Cache limpo.'
+      }
+    };
+
+    var localeByLang = {
+      fr: 'fr-FR',
+      en: 'en-GB',
+      sw: 'sw',
+      ln: 'ln-CD',
+      pt: 'pt-BR'
+    };
+
+    function t(key) {
+      var lng = localStorage.getItem(LANG_KEY) || 'fr';
+      var pack = i18n[lng] || i18n.fr;
+      return pack[key] || i18n.fr[key] || key;
+    }
+
+    function renderHistory() {
+      if (!historyList) return;
+      historyList.innerHTML = '';
+      var raw;
+      try {
+        raw = localStorage.getItem(HISTORY_KEY);
+      } catch (e) {
+        raw = null;
+      }
+      var list = [];
+      if (raw) {
+        try {
+          list = JSON.parse(raw);
+        } catch (e2) {
+          list = [];
+        }
+      }
+      if (!Array.isArray(list) || !list.length) {
+        var li = document.createElement('li');
+        li.className = 'settings-history-empty';
+        li.textContent = t('emptyHistory');
+        historyList.appendChild(li);
+        return;
+      }
+      list.forEach(function (entry) {
+        if (!entry || !entry.url) return;
+        var li = document.createElement('li');
+        li.className = 'settings-history-item';
+        var a = document.createElement('a');
+        a.href = entry.url;
+        a.textContent = entry.title || entry.url;
+        a.className = 'settings-history-link';
+        var time = document.createElement('time');
+        time.className = 'settings-history-time';
+        try {
+          var d = new Date(entry.t || Date.now());
+          var loc =
+            localeByLang[document.documentElement.lang] ||
+            localeByLang[localStorage.getItem(LANG_KEY)] ||
+            'fr-FR';
+          time.textContent = d.toLocaleString(loc, {
+            day: '2-digit',
+            month: 'short',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+        } catch (e3) {
+          time.textContent = '';
+        }
+        li.appendChild(a);
+        li.appendChild(time);
+        historyList.appendChild(li);
+      });
+    }
+
+    if (themeSelect) {
+      var st = localStorage.getItem(THEME_KEY);
+      if (st === 'dark' || st === 'light' || st === 'system') {
+        themeSelect.value = st;
+      } else {
+        themeSelect.value = 'system';
+      }
+      themeSelect.addEventListener('change', function () {
+        setThemeMode(themeSelect.value);
+      });
+    }
+
+    if (langSelect) {
+      var sl = localStorage.getItem(LANG_KEY);
+      var allowedLang = { en: 1, fr: 1, sw: 1, ln: 1, pt: 1 };
+      langSelect.value = allowedLang[sl] ? sl : 'fr';
+      langSelect.addEventListener('change', function () {
+        var v = langSelect.value;
+        if (!allowedLang[v]) return;
+        var prev = localStorage.getItem(LANG_KEY) || 'fr';
+        if (prev === v) return;
+        try {
+          localStorage.setItem(LANG_KEY, v);
+          document.documentElement.lang = v;
+          window.location.reload();
+        } catch (e) {}
+      });
+    }
+
+    if (btnClearHistory) {
+      btnClearHistory.addEventListener('click', function () {
+        try {
+          localStorage.removeItem(HISTORY_KEY);
+        } catch (e) {}
+        renderHistory();
+        try {
+          showAppModal({
+            title: 'Historique',
+            message: t('clearHistoryDone'),
+            variant: 'success'
+          });
+        } catch (e2) {}
+      });
+    }
+
+    if (btnClearCache) {
+      btnClearCache.addEventListener('click', function () {
+        clearAppCache();
+      });
+    }
+
+    renderHistory();
+  }
+
+  initSettingsPage();
 })();

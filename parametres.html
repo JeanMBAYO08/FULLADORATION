@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Full Adoration — Paramètres">
+  <title>Full Adoration — Paramètres</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="page-parametres">
+  <main id="main" class="settings-page" role="main">
+    <section id="menu-avance" class="settings-shell" aria-label="Paramètres et menu avancé">
+      <header class="settings-header">
+        <a href="accueil.html" class="settings-back" aria-label="Retour à l'accueil">
+          <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+        </a>
+        <div class="settings-header-text">
+          <h1 class="settings-title" data-i18n="title">Paramètres</h1>
+          <p class="settings-subtitle" data-i18n="subtitle">Apparence, historique, cache et langue</p>
+        </div>
+      </header>
+
+      <div class="settings-stack">
+        <article class="settings-card settings-profile-card" aria-labelledby="settings-profile-label">
+          <h2 class="settings-card-title" id="settings-profile-label" data-i18n="profileTitle">Profil</h2>
+          <div class="settings-profile">
+            <div class="settings-avatar-wrap">
+              <div class="settings-avatar" id="settings-avatar">
+                <img
+                  id="settings-avatar-img"
+                  class="settings-avatar-img settings-avatar-img--default"
+                  src="assets/mascotte.png"
+                  alt="Mascotte Full Adoration"
+                  width="112"
+                  height="112"
+                >
+                <span id="settings-avatar-initials" class="settings-avatar-initials" aria-hidden="true" hidden>?</span>
+              </div>
+              <button
+                type="button"
+                class="settings-avatar-edit"
+                id="settings-avatar-trigger"
+                data-i18n-aria="profileChangePhotoAria"
+                aria-label="Modifier la photo de profil"
+              >
+                <i class="fa-solid fa-pen" aria-hidden="true"></i>
+              </button>
+              <input
+                type="file"
+                id="settings-avatar-input"
+                class="settings-avatar-file sr-only"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                tabindex="-1"
+              >
+            </div>
+            <div class="settings-profile-fields">
+              <label for="settings-profile-name" class="settings-profile-label" data-i18n="profileNameLabel">Nom affiché</label>
+              <input
+                type="text"
+                id="settings-profile-name"
+                class="settings-profile-input"
+                maxlength="80"
+                autocomplete="name"
+                data-i18n-placeholder="profilePlaceholder"
+                placeholder="Votre prénom ou pseudo"
+              >
+              <label for="settings-profile-phone" class="settings-profile-label" data-i18n="profilePhoneLabel">Numéro d’inscription</label>
+              <input
+                type="tel"
+                id="settings-profile-phone"
+                class="settings-profile-input"
+                maxlength="32"
+                autocomplete="tel"
+                inputmode="tel"
+                data-i18n-placeholder="profilePhonePlaceholder"
+                placeholder="+243 …"
+              >
+              <div class="settings-profile-actions">
+                <button type="button" class="settings-btn settings-btn--secondary settings-btn--small" id="settings-avatar-remove" hidden data-i18n="profileRemovePhoto">
+                  Supprimer la photo
+                </button>
+                <button type="button" class="settings-btn settings-btn--small" id="settings-profile-save" data-i18n="profileSave">
+                  Enregistrer le profil
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="settings-card" aria-labelledby="settings-theme-label">
+          <h2 class="settings-card-title" id="settings-theme-label" data-i18n="themeTitle">Mode d’affichage</h2>
+          <label class="settings-field-label sr-only" for="settings-theme" data-i18n="themeLabel">Thème</label>
+          <select id="settings-theme" class="settings-select" autocomplete="off">
+            <option value="system" data-i18n-opt="themeSystem">Système (recommandé)</option>
+            <option value="dark" data-i18n-opt="themeDark">Sombre</option>
+            <option value="light" data-i18n-opt="themeLight">Clair</option>
+          </select>
+        </article>
+
+        <article class="settings-card" aria-labelledby="settings-lang-label">
+          <h2 class="settings-card-title" id="settings-lang-label" data-i18n="langTitle">Langue</h2>
+          <label class="settings-field-label sr-only" for="settings-lang" data-i18n="langLabel">Langue</label>
+          <div class="settings-dropdown">
+            <select id="settings-lang" class="settings-select settings-select--dropdown" autocomplete="off">
+              <option value="fr">🇫🇷 Français</option>
+              <option value="en">🇬🇧 English</option>
+              <option value="sw">🇹🇿 Kiswahili</option>
+              <option value="ln">🇨🇩 Lingála</option>
+              <option value="pt">🇵🇹 Português</option>
+            </select>
+          </div>
+        </article>
+
+        <article class="settings-card" aria-labelledby="settings-history-label">
+          <h2 class="settings-card-title" id="settings-history-label" data-i18n="historyTitle">Historique</h2>
+          <p class="settings-card-desc" data-i18n="historyDesc">Pages récemment ouvertes sur cet appareil.</p>
+          <ul id="settings-history-list" class="settings-history-list" aria-live="polite"></ul>
+          <button type="button" class="settings-btn settings-btn--secondary" id="settings-clear-history" data-i18n="clearHistory">
+            Vider l’historique
+          </button>
+        </article>
+
+        <article class="settings-card" aria-labelledby="settings-cache-label">
+          <h2 class="settings-card-title" id="settings-cache-label" data-i18n="cacheTitle">Cache et données locales</h2>
+          <p class="settings-card-desc" data-i18n="cacheDesc">Supprime les données stockées localement (sauf thème, langue, prénom, téléphone et photo). La page sera rechargée.</p>
+          <button type="button" class="settings-btn settings-btn--danger" id="settings-clear-cache" data-i18n="clearCache">
+            Vider le cache
+          </button>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <nav class="mobile-bottom-nav" aria-label="Navigation mobile">
+    <a class="mobile-bottom-link" href="accueil.html">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-house"></i></span>
+      <span class="mobile-bottom-text">Accueil</span>
+    </a>
+    <a class="mobile-bottom-link" href="vision.html">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-regular fa-eye"></i></span>
+      <span class="mobile-bottom-text">Vision</span>
+    </a>
+    <a class="mobile-bottom-link mobile-bottom-link--programme" href="programme.html" aria-label="Programme">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-calendar-days"></i></span>
+      <span class="mobile-bottom-text">Programme</span>
+    </a>
+    <a class="mobile-bottom-link" href="messagerie.html">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-regular fa-message"></i></span>
+      <span class="mobile-bottom-text">Messagerie</span>
+    </a>
+    <a class="mobile-bottom-link mobile-bottom-link--active" href="parametres.html" aria-current="page" aria-label="Paramètres">
+      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-bars"></i></span>
+      <span class="mobile-bottom-text">Plus</span>
+    </a>
+  </nav>
+
+  <script src="js/app.js"></script>
+  <script>
+    (function () {
+      var STR = {
+        fr: {
+          title: 'Paramètres',
+          subtitle: 'Apparence, historique, cache et langue',
+          profileTitle: 'Profil',
+          profileNameLabel: 'Nom affiché',
+          profilePlaceholder: 'Votre prénom ou pseudo',
+          profilePhoneLabel: 'Numéro d’inscription',
+          profilePhonePlaceholder: 'Même format qu’à l’inscription (ex. +243…)',
+          profileRemovePhoto: 'Supprimer la photo',
+          profileSave: 'Enregistrer le profil',
+          profileChangePhotoAria: 'Modifier la photo de profil',
+          themeTitle: 'Mode d’affichage',
+          themeLabel: 'Thème',
+          themeSystem: 'Système (recommandé)',
+          themeDark: 'Sombre',
+          themeLight: 'Clair',
+          langTitle: 'Langue',
+          langLabel: 'Langue',
+          historyTitle: 'Historique',
+          historyDesc: 'Pages récemment ouvertes sur cet appareil.',
+          clearHistory: 'Vider l’historique',
+          cacheTitle: 'Cache et données locales',
+          cacheDesc: 'Supprime les données stockées localement (sauf thème, langue, prénom, téléphone et photo). La page sera rechargée.',
+          clearCache: 'Vider le cache'
+        },
+        en: {
+          title: 'Settings',
+          subtitle: 'Appearance, history, cache and language',
+          profileTitle: 'Profile',
+          profileNameLabel: 'Display name',
+          profilePlaceholder: 'Your first name or nickname',
+          profilePhoneLabel: 'Registration phone number',
+          profilePhonePlaceholder: 'Same format as registration (e.g. +44…)',
+          profileRemovePhoto: 'Remove photo',
+          profileSave: 'Save profile',
+          profileChangePhotoAria: 'Change profile photo',
+          themeTitle: 'Display mode',
+          themeLabel: 'Theme',
+          themeSystem: 'System (recommended)',
+          themeDark: 'Dark',
+          themeLight: 'Light',
+          langTitle: 'Language',
+          langLabel: 'Language',
+          historyTitle: 'History',
+          historyDesc: 'Recently opened pages on this device.',
+          clearHistory: 'Clear history',
+          cacheTitle: 'Cache & local data',
+          cacheDesc: 'Removes locally stored data (except theme, language, name, phone and profile photo). The page will reload.',
+          clearCache: 'Clear cache'
+        },
+        sw: {
+          title: 'Mipangilio',
+          subtitle: 'Muonekano, historia, akiba na lugha',
+          profileTitle: 'Wasifu',
+          profileNameLabel: 'Jina linaonekana',
+          profilePlaceholder: 'Jina lako la utani au la kwanza',
+          profilePhoneLabel: 'Nambari ya usajili',
+          profilePhonePlaceholder: 'Sawa na fomu ya usajili',
+          profileRemovePhoto: 'Futa picha',
+          profileSave: 'Hifadhi wasifu',
+          profileChangePhotoAria: 'Badilisha picha ya wasifu',
+          themeTitle: 'Hali ya kuonyesha',
+          themeLabel: 'Mandhari',
+          themeSystem: 'Mfumo (inapendekezwa)',
+          themeDark: 'Giza',
+          themeLight: 'Mwanga',
+          langTitle: 'Lugha',
+          langLabel: 'Lugha',
+          historyTitle: 'Historia',
+          historyDesc: 'Kurasa zilizofunguliwa hivi karibuni kwenye kifaa hiki.',
+          clearHistory: 'Futa historia',
+          cacheTitle: 'Akiba na data ya ndani',
+          cacheDesc: 'Inaondoa data (isipokuwa mandhari, lugha, jina, simu na picha). Ukurasa utapakia tena.',
+          clearCache: 'Futa akiba'
+        },
+        ln: {
+          title: 'Mibeko',
+          subtitle: 'Bokutani, molimi, cache mpe monoko',
+          profileTitle: 'Profil',
+          profileNameLabel: 'Nkombo oyo elongi',
+          profilePlaceholder: 'Nkombo na yo ya liboso',
+          profilePhoneLabel: 'Numéro ya enregistrement',
+          profilePhonePlaceholder: 'Même que na formulaire',
+          profileRemovePhoto: 'Longola sika',
+          profileSave: 'Bakisa profil',
+          profileChangePhotoAria: 'Chengola sika ya profil',
+          themeTitle: 'Mokumba ya koyeba',
+          themeLabel: 'Thème',
+          themeSystem: 'Système (ebakisami)',
+          themeDark: 'Molili',
+          themeLight: 'Polele',
+          langTitle: 'Monoko',
+          langLabel: 'Monoko',
+          historyTitle: 'Molimi',
+          historyDesc: 'Ba pages o efungwami sika na appareil oyo.',
+          clearHistory: 'Longola molimi',
+          cacheTitle: 'Cache mpe ba données locales',
+          cacheDesc: 'Ebima ba données (kaka thème, monoko, téléphone, nkombo mpe sika). Page ekozongela kolia.',
+          clearCache: 'Longola cache'
+        },
+        pt: {
+          title: 'Definições',
+          subtitle: 'Aparência, histórico, cache e idioma',
+          profileTitle: 'Perfil',
+          profileNameLabel: 'Nome exibido',
+          profilePlaceholder: 'O seu primeiro nome ou alcunha',
+          profilePhoneLabel: 'Telefone do registo',
+          profilePhonePlaceholder: 'Mesmo formato do formulário',
+          profileRemovePhoto: 'Remover foto',
+          profileSave: 'Guardar perfil',
+          profileChangePhotoAria: 'Alterar foto de perfil',
+          themeTitle: 'Modo de visualização',
+          themeLabel: 'Tema',
+          themeSystem: 'Sistema (recomendado)',
+          themeDark: 'Escuro',
+          themeLight: 'Claro',
+          langTitle: 'Idioma',
+          langLabel: 'Idioma',
+          historyTitle: 'Histórico',
+          historyDesc: 'Páginas abertas recentemente neste dispositivo.',
+          clearHistory: 'Limpar histórico',
+          cacheTitle: 'Cache e dados locais',
+          cacheDesc: 'Remove dados locais (exceto tema, idioma, nome, telefone e foto). A página será recarregada.',
+          clearCache: 'Limpar cache'
+        }
+      };
+      try {
+        var lang = localStorage.getItem('full-adoration-lang') || 'fr';
+        var t = STR[lang] || STR.fr;
+        document.querySelectorAll('[data-i18n]').forEach(function (el) {
+          var k = el.getAttribute('data-i18n');
+          if (t[k]) el.textContent = t[k];
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+          var pk = el.getAttribute('data-i18n-placeholder');
+          if (t[pk]) el.setAttribute('placeholder', t[pk]);
+        });
+        document.querySelectorAll('[data-i18n-aria]').forEach(function (el) {
+          var ak = el.getAttribute('data-i18n-aria');
+          if (t[ak]) el.setAttribute('aria-label', t[ak]);
+        });
+        var themeSel = document.getElementById('settings-theme');
+        if (themeSel) {
+          themeSel.querySelectorAll('option').forEach(function (opt) {
+            var k = opt.getAttribute('data-i18n-opt');
+            if (k && t[k]) opt.textContent = t[k];
+          });
+        }
+        /* Après i18n : réappliquer nom / téléphone (même source que l’inscription) */
+        try {
+          var phRaw = localStorage.getItem('full-adoration-phone');
+          var phoneEl = document.getElementById('settings-profile-phone');
+          if (phoneEl && phRaw) {
+            var ph = String(phRaw).trim().replace(/\s/g, '');
+            if (ph && ph.charAt(0) !== '+') {
+              var d = ph.replace(/\D/g, '');
+              ph = d.length >= 9 ? '+' + d : phRaw.trim();
+            }
+            phoneEl.value = ph || phRaw;
+          }
+          var nameRaw = localStorage.getItem('full-adoration-name');
+          var nameEl = document.getElementById('settings-profile-name');
+          if (nameEl && nameRaw) nameEl.value = nameRaw;
+        } catch (e2) {}
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>

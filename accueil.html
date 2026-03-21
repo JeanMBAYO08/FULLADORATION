@@ -25,12 +25,6 @@
           <span class="nav-toggle-bar"></span>
         </button>
         <ul class="nav-menu" id="nav-menu">
-          <li class="nav-item-toggle">
-            <button type="button" class="theme-toggle" aria-label="Basculer en mode clair" title="Mode clair / sombre">
-              <span class="theme-icon sun" aria-hidden="true">☀</span>
-              <span class="theme-icon moon" aria-hidden="true">☽</span>
-            </button>
-          </li>
           <li><a class="nav-link" href="accueil.html">Accueil</a></li>
           <li><a class="nav-link" href="#vision">Vision</a></li>
           <li><a class="nav-link" href="#historique">Historique</a></li>
@@ -39,7 +33,7 @@
         <button
           type="button"
           class="nav-link nav-link--with-badge"
-          aria-label="Notifications programme"
+          aria-label="Ouvrir la messagerie"
           id="nav-programme-notif"
         >
           <span class="nav-bell" aria-hidden="true"><i class="fa-solid fa-bell"></i></span>
@@ -68,7 +62,18 @@
       <div class="hero-inner">
         <div class="hero-media-left" aria-hidden="true">
           <div class="hero-media-frame">
-            <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="assets/affiche.jpeg">
+            <video
+              class="hero-video"
+              autoplay
+              muted
+              loop
+              playsinline
+              preload="metadata"
+              poster="assets/affiche.jpeg"
+              disablepictureinpicture
+              disableremoteplayback
+              controlslist="nodownload noplaybackrate nofullscreen"
+            >
               <source src="assets/mov.mp4" type="video/mp4">
             </video>
             <div class="hero-video-overlay" id="hero-video-overlay" aria-live="polite">
@@ -151,7 +156,7 @@
       <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-regular fa-message"></i></span>
       <span class="mobile-bottom-text">Messagerie</span>
     </a>
-    <a class="mobile-bottom-link" href="#menu-avance" aria-label="Menu avancé">
+    <a class="mobile-bottom-link" href="parametres.html" aria-label="Paramètres et menu avancé">
       <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-bars"></i></span>
       <span class="mobile-bottom-text">Plus</span>
     </a>

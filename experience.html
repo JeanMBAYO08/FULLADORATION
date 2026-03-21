@@ -14,11 +14,6 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css" crossorigin="anonymous">
 </head>
 <body>
-  <button type="button" class="theme-toggle" aria-label="Basculer en mode clair" title="Mode clair / sombre">
-    <span class="theme-icon sun" aria-hidden="true">☀</span>
-    <span class="theme-icon moon" aria-hidden="true">☽</span>
-  </button>
-
   <main id="main" class="experience" role="main">
     <div class="experience-content">
       <a href="index.html" class="experience-logo-link" aria-label="Retour à l'accueil">
@@ -69,37 +64,6 @@
       </form>
     </div>
   </main>
-
-  <div class="experience-toast" id="experience-toast" aria-live="assertive" aria-atomic="true" hidden>
-    <div class="experience-toast-inner">
-      <p class="experience-toast-text">
-        Merci de renseigner correctement votre nom et votre numéro de téléphone avant de continuer.
-      </p>
-    </div>
-  </div>
-
-  <nav class="mobile-bottom-nav" aria-label="Navigation mobile">
-    <a class="mobile-bottom-link mobile-bottom-link--active" href="accueil.html" aria-current="page">
-      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-house"></i></span>
-      <span class="mobile-bottom-text">Accueil</span>
-    </a>
-    <a class="mobile-bottom-link" href="vision.html">
-      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-regular fa-eye"></i></span>
-      <span class="mobile-bottom-text">Vision</span>
-    </a>
-    <a class="mobile-bottom-link mobile-bottom-link--programme" href="programme.html" aria-label="Programme">
-      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-calendar-days"></i></span>
-      <span class="mobile-bottom-text">Programme</span>
-    </a>
-    <a class="mobile-bottom-link" href="messagerie.html">
-      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-regular fa-message"></i></span>
-      <span class="mobile-bottom-text">Messagerie</span>
-    </a>
-    <a class="mobile-bottom-link" href="accueil.html#menu-avance" aria-label="Menu avancé">
-      <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-bars"></i></span>
-      <span class="mobile-bottom-text">Plus</span>
-    </a>
-  </nav>
 
   <script src="js/app.js"></script>
   <script>
@@ -178,6 +142,57 @@
         updateDisplay();
       }
 
+      /** Reprend nom + téléphone déjà enregistrés (même source que la page Paramètres) */
+      function applyStoredPhone(storedRaw) {
+        if (!storedRaw || !select || !input || !zeroEl) return;
+        var stored = String(storedRaw).trim().replace(/\s/g, '');
+        if (!stored) return;
+        if (stored.charAt(0) !== '+') {
+          var digitsOnly = stored.replace(/\D/g, '');
+          if (digitsOnly.length >= 9) stored = '+' + digitsOnly;
+          else return;
+        }
+        var prefixes = [];
+        for (var i = 0; i < select.options.length; i++) {
+          prefixes.push({ value: select.options[i].value, index: i });
+        }
+        prefixes.sort(function (a, b) {
+          return b.value.length - a.value.length;
+        });
+        for (var j = 0; j < prefixes.length; j++) {
+          var pv = prefixes[j].value;
+          if (stored.indexOf(pv) === 0) {
+            var rest = stored.slice(pv.length).replace(/\D/g, '');
+            select.selectedIndex = prefixes[j].index;
+            updateDisplay();
+            if (rest.charAt(0) === '0') {
+              zeroEl.textContent = '(0)';
+              input.value = rest.slice(1, 11);
+              input.setAttribute('maxlength', 9);
+            } else {
+              zeroEl.textContent = '';
+              input.value = rest.slice(0, 10);
+              input.setAttribute('maxlength', 10);
+            }
+            updateFull();
+            return;
+          }
+        }
+      }
+
+      function initFromStorage() {
+        try {
+          var savedName = localStorage.getItem('full-adoration-name');
+          if (nameInput && savedName) nameInput.value = savedName;
+        } catch (e) {}
+        try {
+          var savedPhone = localStorage.getItem('full-adoration-phone');
+          if (savedPhone) applyStoredPhone(savedPhone);
+        } catch (e2) {}
+      }
+
+      initFromStorage();
+
       function validatePhone() {
         if (!input) return false;
         var digits = getFullDigits();
@@ -189,32 +204,24 @@
         return true;
       }
       var form = document.querySelector('.experience-form');
-      var toast = document.getElementById('experience-toast');
-      var toastTimeout = null;
 
-      function showToast() {
-        if (!toast) return;
-        toast.hidden = false;
-        // Redémarrer l'animation
-        var inner = toast.querySelector('.experience-toast-inner');
-        if (inner) {
-          inner.style.animation = 'none';
-          void inner.offsetHeight; // reflow
-          inner.style.animation = '';
-        }
-        if (toastTimeout) clearTimeout(toastTimeout);
-        toastTimeout = setTimeout(function () {
-          if (toast) toast.hidden = true;
-        }, 3000);
+      function showFormErrorModal() {
+        if (typeof window.showAppModal !== 'function') return;
+        window.showAppModal({
+          title: 'Champs requis',
+          messageHtml:
+            '<p><strong>Prénom + nom</strong> et <strong>numéro</strong> valides (9 chiffres min.).</p>',
+          variant: 'error'
+        });
       }
+
       if (form) {
         form.addEventListener('submit', function (e) {
           e.preventDefault();
 
-          // Validation HTML5 + téléphone
+          // Validation HTML5 + téléphone (pop-up globale .app-pop)
           if (!form.checkValidity || !form.checkValidity() || !validateName() || !validatePhone()) {
-            if (form.reportValidity) form.reportValidity();
-            showToast();
+            showFormErrorModal();
             return;
           }
 
@@ -223,6 +230,12 @@
             try {
               localStorage.setItem('full-adoration-name', nameInput.value.trim());
             } catch (err) {}
+          }
+          /* Même clé que Paramètres : modifier le numéro partout depuis le profil */
+          if (fullEl && fullEl.value) {
+            try {
+              localStorage.setItem('full-adoration-phone', fullEl.value.trim());
+            } catch (err2) {}
           }
           window.location.href = 'accueil.html';
         });

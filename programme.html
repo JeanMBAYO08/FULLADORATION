@@ -13,21 +13,13 @@
   <link rel="stylesheet" href="css/programme.css">
 </head>
 <body>
-  <button type="button" class="theme-toggle" aria-label="Basculer en mode clair" title="Mode clair / sombre">
-    <span class="theme-icon sun" aria-hidden="true">☀</span>
-    <span class="theme-icon moon" aria-hidden="true">☽</span>
+  <button type="button" class="programme-share programme-share--floating" id="programme-share" aria-label="Partager le programme" title="Partager">
+    <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
   </button>
 
   <main id="main" class="programme" role="main">
     <section class="programme-shell" aria-label="Programme de Full Adoration">
-      <header class="programme-topbar">
-        <h1 class="programme-page-title">Programme</h1>
-
-        <button type="button" class="programme-share" id="programme-share" aria-label="Partager le programme" title="Partager">
-          <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
-        </button>
-      </header>
-
+      <h1 class="sr-only">Programme</h1>
       <div class="programme-box-grid" aria-label="Événements du programme">
         <article class="programme-box" id="programme-box-restauration" aria-label="Mercredi 15, Jeudi 16, Vendredi 17 avril — 15H — Église MERS">
           <div class="programme-box-inner">
@@ -186,7 +178,7 @@
       <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-regular fa-message"></i></span>
       <span class="mobile-bottom-text">Messagerie</span>
     </a>
-    <a class="mobile-bottom-link" href="accueil.html#menu-avance" aria-label="Menu avancé">
+    <a class="mobile-bottom-link" href="parametres.html" aria-label="Paramètres et menu avancé">
       <span class="mobile-bottom-icon" aria-hidden="true"><i class="fa-solid fa-bars"></i></span>
       <span class="mobile-bottom-text">Plus</span>
     </a>
@@ -467,7 +459,12 @@
         }
 
         tick();
-        window.setInterval(tick, 450);
+        var chenMs =
+          typeof window.matchMedia !== 'undefined' &&
+          window.matchMedia('(max-width: 759px)').matches
+            ? 900
+            : 450;
+        window.setInterval(tick, chenMs);
       })();
     })();
   </script>
