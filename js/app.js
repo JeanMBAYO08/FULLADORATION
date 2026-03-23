@@ -671,8 +671,15 @@
     presenceModal.classList.add('is-open');
     if (chatBackdrop) chatBackdrop.removeAttribute('hidden');
     updatePresenceOriginAutreVisibility();
+    var isMobileViewport =
+      typeof window.matchMedia !== 'undefined' &&
+      window.matchMedia('(max-width: 759px)').matches;
     var firstField = document.querySelector('input[name="origin"]') || presenceOriginEl;
-    if (firstField) firstField.focus();
+    // Sur mobile, éviter le focus immédiat du <select> pour ne pas ouvrir
+    // automatiquement le menu dropdown natif.
+    if (firstField && !isMobileViewport) {
+      firstField.focus();
+    }
   }
 
   function closePresence() {
