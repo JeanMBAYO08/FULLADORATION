@@ -42,6 +42,14 @@
   .app-pop__panel {
     animation: none;
   }
+
+  .landing-cta--liquid-glass {
+    animation: cta-enter 0.8s var(--ease-out-expo) 1.6s forwards !important;
+  }
+
+  .landing-cta--liquid-glass::before {
+    animation: none !important;
+  }
 }
 
 *, *::before, *::after {
@@ -779,6 +787,16 @@ body.app-pop-open {
     bottom: calc(0.45rem + env(safe-area-inset-bottom));
   }
 
+  /*
+   * Distance du bas du viewport → bord SUPÉRIEUR du menu flottant
+   * (même chiffres que .mobile-bottom-nav : bottom + padding + min-height liens + bordures)
+   */
+  :root {
+    --mobile-nav-top-from-bottom: calc(
+      env(safe-area-inset-bottom, 0px) + 0.45rem + 0.4rem + 58px + 0.45rem + 2px
+    );
+  }
+
   [data-theme="light"] .mobile-bottom-nav {
     background: rgba(248, 245, 240, 0.96);
     border-color: rgba(0, 0, 0, 0.1);
@@ -1269,6 +1287,102 @@ body.app-pop-open {
   box-shadow: 0 0 16px rgba(196, 92, 62, 0.25);
 }
 
+.poster-cta-button--with-icon {
+  gap: 0.5rem;
+}
+
+/* Bouton retour flottant (ex. pages avec barre d’action) — sous le menu bas (z-index 145) */
+/* [hidden] doit rester prioritaire (sinon display:inline-flex masque l’attribut hidden) */
+.app-floating-back[hidden] {
+  display: none !important;
+}
+
+.app-floating-back {
+  position: fixed;
+  top: max(0.65rem, env(safe-area-inset-top));
+  left: max(0.75rem, env(safe-area-inset-left));
+  z-index: 120;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.5rem 1rem 0.5rem 0.75rem;
+  min-height: 46px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(14, 14, 14, 0.52);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: var(--color-text);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow:
+    0 14px 36px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+button.app-floating-back {
+  appearance: none;
+  -webkit-appearance: none;
+  font: inherit;
+  margin: 0;
+  cursor: pointer;
+  text-align: center;
+}
+
+.app-floating-back:hover {
+  transform: translateY(-1px);
+  background: rgba(24, 24, 24, 0.65);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.app-floating-back:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.app-floating-back i {
+  font-size: 0.95rem;
+  opacity: 0.95;
+}
+
+[data-theme="light"] .app-floating-back {
+  background: rgba(248, 245, 240, 0.88);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="light"] .app-floating-back:hover {
+  background: rgba(255, 255, 255, 0.92);
+}
+
+/* Vision : lien « Retour » masqué en mobile (menu bas) ; visible en bureau */
+.page-vision .poster-cta-wrap.vision-back {
+  display: none !important;
+}
+
+@media (min-width: 760px) {
+  .page-vision .poster-cta-wrap.vision-back {
+    display: flex !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .app-floating-back__text {
+    display: none;
+  }
+
+  .app-floating-back {
+    padding: 0.5rem;
+    min-width: 46px;
+    justify-content: center;
+  }
+}
+
 .hero-bg {
   position: absolute;
   inset: 0;
@@ -1742,6 +1856,179 @@ body.app-pop-open {
 
 @keyframes cta-enter {
   to { opacity: 1; }
+}
+
+@keyframes cta-glass-shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Double pulsation puis repos — rythme type battement de cœur */
+@keyframes cta-glass-heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  /* 1er battement (lub) */
+  6% {
+    transform: scale(1.055);
+  }
+  12% {
+    transform: scale(1);
+  }
+  /* 2e battement (dub), un peu plus marqué */
+  20% {
+    transform: scale(1.08);
+  }
+  28% {
+    transform: scale(1);
+  }
+  /* 28% → 100% : pause avant le prochain cycle */
+}
+
+/* Index — CTA « liquide glass » : flou, reflets, animation douce */
+.landing-cta.landing-cta--liquid-glass {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  padding: 1.05rem 1.95rem;
+  line-height: 1.35;
+  max-width: min(100%, 22rem);
+  background: linear-gradient(
+    118deg,
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.05) 38%,
+    rgba(224, 122, 95, 0.14) 72%,
+    rgba(255, 255, 255, 0.08) 100%
+  );
+  background-size: 240% 240%;
+  backdrop-filter: blur(20px) saturate(1.25);
+  -webkit-backdrop-filter: blur(20px) saturate(1.25);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 9999px;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.45),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.18),
+    0 10px 40px rgba(0, 0, 0, 0.22),
+    0 2px 14px rgba(0, 0, 0, 0.14);
+  transition:
+    border-color 0.45s var(--ease-in-out-smooth),
+    box-shadow 0.45s var(--ease-in-out-smooth),
+    transform 0.4s var(--ease-in-out-smooth),
+    filter 0.4s ease;
+  opacity: 0;
+  animation:
+    cta-enter 0.8s var(--ease-out-expo) 1.6s forwards,
+    cta-glass-shimmer 28s ease-in-out 2.4s infinite,
+    cta-glass-heartbeat 8s cubic-bezier(0.22, 0.61, 0.36, 1) 2.4s infinite;
+}
+
+.landing-cta.landing-cta--liquid-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    120% 80% at 30% 0%,
+    rgba(255, 255, 255, 0.28),
+    transparent 55%
+  );
+  opacity: 0.55;
+  pointer-events: none;
+  animation: cta-glass-gleam 18s ease-in-out 2.4s infinite alternate;
+}
+
+@keyframes cta-glass-gleam {
+  from {
+    opacity: 0.35;
+    transform: translate3d(-4%, 0, 0) scale(1);
+  }
+  to {
+    opacity: 0.65;
+    transform: translate3d(4%, 2%, 0) scale(1);
+  }
+}
+
+.landing-cta.landing-cta--liquid-glass:hover {
+  /* Shimmer actif, battement en pause pour laisser le scale au survol */
+  animation-play-state: running, running, paused;
+  border-color: rgba(224, 122, 95, 0.55);
+  background: linear-gradient(
+    118deg,
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(224, 122, 95, 0.18) 45%,
+    rgba(224, 122, 95, 0.12) 100%
+  );
+  background-size: 240% 240%;
+  font-weight: 600;
+  transform: scale(1.035);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.5),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.12),
+    0 0 36px rgba(224, 122, 95, 0.28),
+    0 0 72px rgba(224, 122, 95, 0.1),
+    0 12px 36px rgba(0, 0, 0, 0.2);
+}
+
+.landing-cta.landing-cta--liquid-glass:active {
+  animation-play-state: running, running, paused;
+  transform: scale(0.99);
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.2),
+    0 0 20px rgba(224, 122, 95, 0.2);
+}
+
+[data-theme="light"] .landing-cta.landing-cta--liquid-glass {
+  color: var(--color-text);
+  background: linear-gradient(
+    118deg,
+    rgba(255, 255, 255, 0.82) 0%,
+    rgba(255, 255, 255, 0.42) 42%,
+    rgba(224, 122, 95, 0.2) 100%
+  );
+  background-size: 240% 240%;
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.95),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.05),
+    0 10px 36px rgba(0, 0, 0, 0.1),
+    0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .landing-cta.landing-cta--liquid-glass::before {
+  background: radial-gradient(
+    120% 80% at 25% 0%,
+    rgba(255, 255, 255, 0.85),
+    transparent 58%
+  );
+  opacity: 0.45;
+}
+
+[data-theme="light"] .landing-cta.landing-cta--liquid-glass:hover {
+  animation-play-state: running, running, paused;
+  border-color: rgba(196, 92, 62, 0.45);
+  background: linear-gradient(
+    118deg,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(224, 122, 95, 0.22) 50%,
+    rgba(255, 255, 255, 0.55) 100%
+  );
+  background-size: 240% 240%;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 1),
+    0 0 32px rgba(196, 92, 62, 0.22),
+    0 8px 28px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .landing-cta.landing-cta--liquid-glass:active {
+  background: rgba(196, 92, 62, 0.12);
 }
 
 /* Apparition douce puis zoom avant / arrière harmonieux */
@@ -2672,39 +2959,45 @@ main.home:not(.vision-page) .vision-inner {
   border-color: rgba(0, 0, 0, 0.08);
 }
 
+/* Repères : pastille seule sur la 1re ligne ; icône + titre sur la même ligne en dessous */
 .vision-card-head {
+  margin-bottom: 0.65rem;
+  width: 100%;
+  text-align: center;
+}
+
+.vision-card-head-inner {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.35rem;
-  margin-bottom: 0.55rem;
-}
-
-.vision-card-index-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  width: 100%;
-}
-
-.vision-card-meta-row {
-  display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   width: 100%;
+  min-width: 0;
+}
+
+.vision-card-title-line {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  /* Petit espace entre l’icône et le titre */
+  gap: 0.45rem;
+  width: auto;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .vision-card-content {
-  padding: 0.95rem 0.95rem 0.85rem;
+  padding: 0.95rem 0.95rem 0;
 }
 
 .vision-card-media {
   width: 100%;
   height: 150px;
   background: rgba(0, 0, 0, 0.15);
-  margin-top: auto;
+  margin-top: 0;
   overflow: hidden;
   position: relative;
 }
@@ -2715,6 +3008,35 @@ main.home:not(.vision-page) .vision-inner {
   object-fit: contain;
   object-position: center bottom;
   display: block;
+}
+
+/* Page Vision — image en plein cadre (toute la zone sous le texte) */
+main.vision-page .vision-card:not(.vision-card--expanded) {
+  display: flex;
+  flex-direction: column;
+  min-height: min(100vh, 100dvh);
+}
+
+main.vision-page .vision-card:not(.vision-card--expanded) .vision-card-content {
+  flex: 0 0 auto;
+}
+
+main.vision-page .vision-card:not(.vision-card--expanded) .vision-card-media {
+  flex: 1 1 auto;
+  min-height: min(48vh, 520px);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: auto;
+}
+
+main.vision-page .vision-card:not(.vision-card--expanded) .vision-card-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
 }
 
 .vision-card-index {
@@ -2734,6 +3056,51 @@ main.home:not(.vision-page) .vision-inner {
 
 [data-theme="light"] .vision-card-index {
   color: rgba(122, 75, 37, 0.95);
+}
+
+/* « Voir plus » : repères centrés, espacement harmonisé */
+.vision-card--expanded .vision-card-head {
+  margin-bottom: 0;
+}
+
+.vision-card--expanded .vision-card-head-inner {
+  gap: clamp(0.65rem, 2.8vw, 1.1rem);
+}
+
+.vision-card--expanded .vision-card-index {
+  width: 38px;
+  height: 38px;
+  font-size: 1.02rem;
+  backdrop-filter: blur(14px) saturate(1.25);
+  -webkit-backdrop-filter: blur(14px) saturate(1.25);
+  background: linear-gradient(
+    152deg,
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(255, 255, 255, 0.07) 42%,
+    rgba(224, 122, 95, 0.16) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.36);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.48),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.14),
+    0 6px 22px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(224, 122, 95, 0.15);
+  color: rgba(255, 255, 255, 0.97);
+}
+
+[data-theme="light"] .vision-card--expanded .vision-card-index {
+  background: linear-gradient(
+    152deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.42) 48%,
+    rgba(224, 122, 95, 0.14) 100%
+  );
+  border-color: rgba(0, 0, 0, 0.11);
+  color: rgba(100, 58, 28, 0.98);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.06),
+    0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
 .vision-card-back {
@@ -2761,14 +3128,25 @@ main.home:not(.vision-page) .vision-inner {
 }
 
 .vision-card-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
   font-size: 1.05rem;
   color: var(--color-accent);
-  width: 30px;
-  text-align: center;
+  line-height: 1;
 }
 
+/* flex: 0 1 auto (pas grow) : avec flex:1 le h3 occupe toute la ligne et text-align:center crée un espace entre l’icône et le texte */
 .vision-card-title {
   margin: 0;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
   font-size: 1.02rem;
   font-weight: 700;
   letter-spacing: 0.01em;
@@ -2790,6 +3168,8 @@ main.home:not(.vision-page) .vision-inner {
   font-size: 0.98rem;
   display: block;
   text-align: justify;
+  text-align-last: left;
+  text-justify: inter-word;
 }
 
 [data-theme="light"] .vision-card-text {
@@ -2815,9 +3195,28 @@ main.home:not(.vision-page) .vision-inner {
 }
 
 .vision-card-text--expanded {
-  display: inline;
+  display: block;
+  width: 100%;
+  max-width: 100%;
   -webkit-line-clamp: unset;
   overflow: visible;
+}
+
+/* Paragraphes visibles seulement une fois « Voir plus » ouvert */
+.vision-text-para {
+  display: inline;
+}
+
+.vision-card-text--expanded .vision-text-para {
+  display: block;
+  margin: 0 0 0.95rem;
+  text-align: justify;
+  text-align-last: left;
+  text-justify: inter-word;
+}
+
+.vision-card-text--expanded .vision-text-para:last-child {
+  margin-bottom: 0;
 }
 
 .vision-card-more {
@@ -2947,6 +3346,8 @@ main.home:not(.vision-page) .vision-inner {
     min-height: 100vh;
     overflow-y: auto;
     scroll-snap-type: y mandatory;
+    scroll-padding-top: max(0.5rem, env(safe-area-inset-top));
+    scroll-padding-bottom: calc(var(--mobile-nav-top-from-bottom) + 0.35rem);
     -webkit-overflow-scrolling: touch;
     padding-bottom: 0;
   }
@@ -2983,7 +3384,7 @@ main.home:not(.vision-page) .vision-inner {
   }
 
   .vision-card-content {
-    padding: 0.9rem 0.9rem 0.35rem;
+    padding: 0.9rem 0.9rem 0;
     flex: 0 0 auto;
     overflow: visible;
     display: flex;
@@ -2991,92 +3392,66 @@ main.home:not(.vision-page) .vision-inner {
   }
 
   .vision-card-media {
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     height: auto;
     min-height: 160px;
     margin-top: 0;
     margin-bottom: 0;
-    /* Colle l'image sous le menu fixe */
-    transform: translateY(90px);
+    transform: none;
   }
 
   .vision-card-title {
     font-size: 0.98rem;
   }
 
+  /* Texte justifié ; dernière ligne à gauche pour éviter un grand trou avant « Voir plus » */
   .vision-card-text,
   .vision-card-text-row .vision-card-text {
     font-size: 0.95rem;
     line-height: 1.25;
-    display: flex;
-    align-items: baseline;
-    flex-wrap: nowrap;
-    gap: 0;
-    width: 100%;
-  }
-
-  .vision-card-text--clamp {
-    flex: 1 1 auto;
-    min-width: 0;
-  }
-
-  .vision-card-more {
-    display: inline;
-    margin-left: 0;
-  }
-
-  /* Le bouton est à l'intérieur du span clamped, donc on force un flux texte */
-  .vision-card-text {
-    display: flex !important;
+    display: block !important;
+    position: static !important;
+    padding-right: 0 !important;
+    text-align: justify;
+    text-align-last: left;
+    text-justify: inter-word;
     width: 100% !important;
+  }
+
+  .vision-card-text-row {
+    display: block;
+  }
+
+  /* Pleine largeur = justification sur les 3 lignes ; inline-box pour coller le bouton au flux */
+  .vision-card-text--clamp {
+    display: -webkit-inline-box !important;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    vertical-align: text-bottom;
+    text-align: justify;
+    text-align-last: left;
+    word-break: break-word;
+    hyphens: auto;
+    -webkit-hyphens: auto;
   }
 
   .vision-card-more {
     display: inline !important;
-    padding: 0 !important;
-    border: 0 !important;
-    background: transparent !important;
-    font-size: 0.85em;
-    line-height: inherit;
-    vertical-align: baseline;
-    flex: 0 0 auto;
-    margin-left: 0;
-  }
-
-  .vision-card-text-row {
-    gap: 0;
-    display: flex;
-    align-items: baseline;
-  }
-
-  .vision-card-more {
-    font-size: 0.85em;
-    padding: 0;
-    align-self: auto;
-    margin-top: 0;
-  }
-
-  /* Met le bouton sur la dernière ligne visible (positionnement en fin de bloc) */
-  .vision-card-text {
-    display: block !important;
-    position: relative !important;
-    padding-right: 5.4rem !important;
-  }
-
-  .vision-card-more {
-    position: absolute !important;
-    right: 0.1rem !important;
-    bottom: 0.05em !important;
-    margin-left: 0 !important;
+    position: static !important;
+    right: auto !important;
+    bottom: auto !important;
     padding: 0 !important;
     border: 0 !important;
     background: transparent !important;
     font-size: 0.85em !important;
+    line-height: inherit;
     vertical-align: baseline;
-  }
-
-  .vision-card--expanded .vision-card-more {
-    position: static !important;
+    margin-left: 0.05em;
+    white-space: nowrap;
   }
 
   .vision-card {
@@ -3085,7 +3460,39 @@ main.home:not(.vision-page) .vision-inner {
     scroll-snap-align: start;
   }
 
-  /* Voir plus : titre en haut, espace sous le titre, fond image + overlay inchangés */
+  /* Texte en haut ; bas de la zone image = bord supérieur exact du menu bas */
+  main.vision-page .vision-card:not(.vision-card--expanded) {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    box-sizing: border-box;
+    padding-bottom: var(--mobile-nav-top-from-bottom);
+  }
+
+  main.vision-page .vision-card:not(.vision-card--expanded) .vision-card-content {
+    flex: 0 1 auto;
+    min-height: 0;
+  }
+
+  /* Occupe tout l’espace jusqu’au padding réservé au menu bas */
+  main.vision-page .vision-card:not(.vision-card--expanded) .vision-card-media {
+    flex: 1 1 auto;
+    min-height: 0;
+    margin-top: 0;
+    width: 100%;
+    display: block;
+  }
+
+  main.vision-page .vision-card:not(.vision-card--expanded) .vision-card-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+  }
+
+  /* Voir plus : titre en haut, plus d’air avant le texte développé */
   .vision-card--expanded .vision-card-content {
     background: transparent;
     backdrop-filter: none;
@@ -3099,7 +3506,7 @@ main.home:not(.vision-page) .vision-inner {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    gap: 1.35rem;
+    gap: clamp(2.15rem, 6vw, 3rem);
     padding: max(0.75rem, env(safe-area-inset-top)) 0.9rem
       calc(68px + env(safe-area-inset-bottom, 0px)) 0.9rem;
     box-sizing: border-box;
@@ -3108,7 +3515,7 @@ main.home:not(.vision-page) .vision-inner {
   }
 
   .vision-card--expanded .vision-card-body {
-    padding-top: 0;
+    padding-top: clamp(1.1rem, 4vw, 1.85rem);
     overflow: visible;
     flex-shrink: 0;
   }
@@ -3116,6 +3523,10 @@ main.home:not(.vision-page) .vision-inner {
   .vision-card--expanded .vision-card-head {
     margin-bottom: 0;
     flex-shrink: 0;
+    width: 100%;
+  }
+
+  .vision-card--expanded .vision-card-head-inner {
     justify-content: center;
   }
 
@@ -3129,13 +3540,13 @@ main.home:not(.vision-page) .vision-inner {
   }
 
   .vision-card--expanded .vision-card-img {
-    /* blur() sur image plein écran = très coûteux sur mobile */
-    filter: brightness(0.58);
-    transform: scale(1.06);
+    filter: brightness(0.45) blur(14px);
+    transform: scale(1.14);
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: 0.95;
+    opacity: 0.92;
+    transform-origin: center center;
   }
 
   /* L'image devient le background de toute la card */
@@ -3146,18 +3557,30 @@ main.home:not(.vision-page) .vision-inner {
     width: 100%;
     margin-top: 0;
     z-index: 0;
+    overflow: hidden;
   }
 
-  /* Overlay pour rendre le texte lisible (plus léger que blur sur l'image) */
+  /* Voile + flou fort sur le fond (lisibilité du texte « Voir plus ») */
   .vision-card--expanded .vision-card-media::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.42);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    z-index: 0;
+    background: rgba(0, 0, 0, 0.52);
+    backdrop-filter: blur(28px) saturate(0.85);
+    -webkit-backdrop-filter: blur(28px) saturate(0.85);
+    z-index: 1;
     pointer-events: none;
+  }
+
+  [data-theme="light"] .vision-card--expanded .vision-card-media::after {
+    background: rgba(245, 242, 237, 0.42);
+    backdrop-filter: blur(26px) saturate(0.9);
+    -webkit-backdrop-filter: blur(26px) saturate(0.9);
+  }
+
+  [data-theme="light"] .vision-card--expanded .vision-card-img {
+    filter: brightness(0.72) blur(12px);
+    opacity: 0.88;
   }
 
   main.vision-page .vision-card:not(.vision-card--expanded) .vision-card-body {

@@ -1173,54 +1173,20 @@
     function renderHistory() {
       if (!historyList) return;
       historyList.innerHTML = '';
-      var raw;
-      try {
-        raw = localStorage.getItem(HISTORY_KEY);
-      } catch (e) {
-        raw = null;
-      }
-      var list = [];
-      if (raw) {
-        try {
-          list = JSON.parse(raw);
-        } catch (e2) {
-          list = [];
-        }
-      }
-      if (!Array.isArray(list) || !list.length) {
-        var li = document.createElement('li');
-        li.className = 'settings-history-empty';
-        li.textContent = t('emptyHistory');
-        historyList.appendChild(li);
-        return;
-      }
+      var list = [
+        { title: 'Full Adoration 2023', url: 'accueil.html' },
+        { title: 'Full Adoration 2024', url: 'accueil.html' },
+        { title: 'Full Adoration 2025', url: 'accueil.html' }
+      ];
+
       list.forEach(function (entry) {
-        if (!entry || !entry.url) return;
         var li = document.createElement('li');
         li.className = 'settings-history-item';
         var a = document.createElement('a');
         a.href = entry.url;
         a.textContent = entry.title || entry.url;
         a.className = 'settings-history-link';
-        var time = document.createElement('time');
-        time.className = 'settings-history-time';
-        try {
-          var d = new Date(entry.t || Date.now());
-          var loc =
-            localeByLang[document.documentElement.lang] ||
-            localeByLang[localStorage.getItem(LANG_KEY)] ||
-            'fr-FR';
-          time.textContent = d.toLocaleString(loc, {
-            day: '2-digit',
-            month: 'short',
-            hour: '2-digit',
-            minute: '2-digit'
-          });
-        } catch (e3) {
-          time.textContent = '';
-        }
         li.appendChild(a);
-        li.appendChild(time);
         historyList.appendChild(li);
       });
     }
