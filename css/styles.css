@@ -2387,6 +2387,10 @@ button.app-floating-back {
   gap: 0.4rem;
 }
 
+.presence-field[hidden] {
+  display: none !important;
+}
+
 .presence-fieldset {
   margin: 0;
   padding: 0.75rem 0.85rem;
@@ -2414,11 +2418,61 @@ button.app-floating-back {
   margin-top: 0.35rem;
 }
 
+.presence-origin-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
 .presence-option {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
   font-size: 0.875rem;
+}
+
+.presence-origin-option {
+  width: 100%;
+  margin: 0;
+}
+
+.presence-origin-option span {
+  width: 100%;
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.03);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.presence-origin-option i {
+  color: var(--color-accent);
+  font-size: 0.95rem;
+}
+
+.presence-origin-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.presence-origin-option input[type="radio"]:checked + span {
+  border-color: rgba(224, 122, 95, 0.7);
+  background: rgba(224, 122, 95, 0.12);
+}
+
+[data-theme="light"] .presence-origin-option span {
+  border-color: rgba(0, 0, 0, 0.14);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="light"] .presence-origin-option input[type="radio"]:checked + span {
+  border-color: rgba(196, 92, 62, 0.6);
+  background: rgba(196, 92, 62, 0.1);
 }
 
 .presence-option input[type="radio"] {
@@ -2435,6 +2489,7 @@ button.app-floating-back {
 }
 
 .presence-field select,
+.presence-field input,
 .presence-field textarea {
   width: 100%;
   box-sizing: border-box;
@@ -2462,6 +2517,12 @@ button.app-floating-back {
   padding-right: 2.25rem;
 }
 
+/* Assure un contraste lisible dans la liste native du dropdown */
+.presence-field select option {
+  color: #1a1916;
+  background-color: #ffffff;
+}
+
 [data-theme="light"] .presence-field select {
   background-color: rgba(0, 0, 0, 0.03);
   border-color: rgba(0, 0, 0, 0.15);
@@ -2474,8 +2535,18 @@ button.app-floating-back {
   border-color: rgba(0, 0, 0, 0.15);
 }
 
+[data-theme="light"] .presence-field input {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
 .presence-field textarea::placeholder {
   color: rgba(255, 255, 255, 0.4);
+}
+
+#presence-origin-autre {
+  min-height: 7.25rem;
+  max-height: 10rem;
 }
 
 [data-theme="light"] .presence-field textarea::placeholder {
@@ -2483,6 +2554,7 @@ button.app-floating-back {
 }
 
 .presence-field select:focus,
+.presence-field input:focus,
 .presence-field textarea:focus {
   outline: none;
   border-color: var(--color-accent);
@@ -2490,6 +2562,7 @@ button.app-floating-back {
 }
 
 [data-theme="light"] .presence-field select:focus,
+[data-theme="light"] .presence-field input:focus,
 [data-theme="light"] .presence-field textarea:focus {
   box-shadow: 0 0 0 3px rgba(196, 92, 62, 0.12);
 }
@@ -2588,12 +2661,25 @@ button.app-floating-back {
 
 @media (max-width: 600px) {
   .presence-modal {
-    width: min(100%, 92vw);
-    max-height: 85vh;
+    top: max(0.55rem, env(safe-area-inset-top));
+    left: 50%;
+    width: min(100%, 94vw);
+    max-height: calc(100dvh - max(0.55rem, env(safe-area-inset-top)) - max(0.55rem, env(safe-area-inset-bottom)));
+    transform: translateX(-50%);
+  }
+
+  .presence-modal.is-open {
+    transform: translateX(-50%);
   }
 
   .presence-modal-inner {
     padding: 1.1rem 1rem 1rem;
+    max-height: inherit;
+    overflow-y: auto;
+  }
+
+  .presence-origin-options {
+    grid-template-columns: 1fr;
   }
 }
 

@@ -173,12 +173,38 @@
           <label for="presence-origin">Comment avez-vous connu cet évènement&nbsp;?</label>
           <select id="presence-origin" name="origin" required>
             <option value="" disabled selected>Choisissez une option</option>
-            <option value="paroisse">Annonce à la paroisse</option>
-            <option value="reseaux">Réseaux sociaux</option>
+            <option value="instagram">Instagram</option>
+            <option value="facebook">Facebook</option>
+            <option value="whatsapp">WhatsApp</option>
+            <option value="tiktok">TikTok</option>
+            <option value="youtube">YouTube</option>
+            <option value="eglise">Église</option>
             <option value="amis">Par un ami / une connaissance</option>
             <option value="eglise">Communauté / groupe de prière</option>
             <option value="autre">Autre</option>
           </select>
+        </div>
+
+        <div class="presence-field" id="presence-origin-autre-wrap" hidden>
+          <label for="presence-origin-autre">Précisez (max 5 lignes)</label>
+          <textarea
+            id="presence-origin-autre"
+            name="origin_autre"
+            rows="5"
+            placeholder="Dites-nous où vous avez entendu parler de l'évènement (5 lignes maximum)."
+          ></textarea>
+        </div>
+
+        <div class="presence-field">
+          <label for="presence-eglise-provenance">Église de provenance (max 20 caractères)</label>
+          <input
+            type="text"
+            id="presence-eglise-provenance"
+            name="eglise_provenance"
+            maxlength="20"
+            placeholder="Ex: MERS"
+            required
+          >
         </div>
 
         <div class="presence-field">
@@ -189,6 +215,7 @@
             <option value="interesse">Intéressé(e)</option>
             <option value="curieux">Curieux(se), je découvre</option>
             <option value="encore-hesitant">Encore un peu hésitant(e)</option>
+            <option value="autre">Autre</option>
           </select>
         </div>
 
@@ -201,6 +228,7 @@
             <option value="adoration">Temps fort d’adoration</option>
             <option value="communion-fraternelle">Communion fraternelle</option>
             <option value="discernement">Lumière / discernement pour une situation</option>
+            <option value="autre">Autre</option>
           </select>
         </div>
 

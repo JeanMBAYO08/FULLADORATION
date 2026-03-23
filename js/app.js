@@ -269,6 +269,9 @@
   var presenceOpenBtn = document.getElementById('presence-open');
   var presenceModal = document.querySelector('.presence-modal');
   var presenceForm = document.getElementById('presence-form');
+  var presenceOriginEl = document.getElementById('presence-origin');
+  var presenceOriginAutreWrapEl = document.getElementById('presence-origin-autre-wrap');
+  var presenceOriginAutreEl = document.getElementById('presence-origin-autre');
   var presenceCloseBtn = document.querySelector('.presence-close');
   var presenceCancelBtn = document.getElementById('presence-cancel');
   var navProgrammeNotif = document.getElementById('nav-programme-notif');
@@ -667,7 +670,8 @@
     presenceModal.removeAttribute('hidden');
     presenceModal.classList.add('is-open');
     if (chatBackdrop) chatBackdrop.removeAttribute('hidden');
-    var firstField = document.getElementById('presence-origin');
+    updatePresenceOriginAutreVisibility();
+    var firstField = document.querySelector('input[name="origin"]') || presenceOriginEl;
     if (firstField) firstField.focus();
   }
 
@@ -675,6 +679,7 @@
     if (!presenceModal) return;
     presenceModal.setAttribute('hidden', 'true');
     presenceModal.classList.remove('is-open');
+    updatePresenceOriginAutreVisibility();
     if (chatBackdrop && (!chatWindow || chatWindow.hasAttribute('hidden'))) {
       chatBackdrop.setAttribute('hidden', 'true');
     }
@@ -740,27 +745,81 @@
       showAppModal({
         title: 'Champs requis',
         messageHtml:
-          '<p><strong>Origine</strong>, <strong>impressions</strong> et <strong>attentes</strong> : sélectionnez chaque liste.</p>',
+          '<p><strong>Origine</strong>, <strong>église de provenance</strong>, <strong>impressions</strong> et <strong>attentes</strong> : remplissez les champs demandés.</p>',
         variant: 'error'
       });
     } catch (err) {}
   }
 
+  function countNonEmptyLines(text) {
+    if (!text) return 0;
+    return String(text)
+      .split(/\r?\n/)
+      .filter(function (line) {
+        return String(line).trim() !== '';
+      }).length;
+  }
+
+  function clampToFiveLines(text) {
+    var lines = String(text || '').split(/\r?\n/);
+    return lines.slice(0, 5).join('\n');
+  }
+
+  function updatePresenceOriginAutreVisibility() {
+    if (!presenceOriginEl || !presenceOriginAutreWrapEl || !presenceOriginAutreEl) return;
+    var isAutre = String(presenceOriginEl.value || '').trim() === 'autre';
+    presenceOriginAutreWrapEl.hidden = !isAutre;
+    presenceOriginAutreEl.required = isAutre;
+    presenceOriginAutreEl.disabled = !isAutre;
+    if (!isAutre) {
+      presenceOriginAutreEl.value = '';
+    }
+  }
+
+  if (presenceOriginEl) {
+    presenceOriginEl.addEventListener('change', updatePresenceOriginAutreVisibility);
+    updatePresenceOriginAutreVisibility();
+  }
+
+  if (presenceOriginAutreEl) {
+    presenceOriginAutreEl.addEventListener('input', function () {
+      var normalized = clampToFiveLines(presenceOriginAutreEl.value);
+      if (normalized !== presenceOriginAutreEl.value) {
+        presenceOriginAutreEl.value = normalized;
+      }
+    });
+  }
+
   if (presenceForm) {
     presenceForm.addEventListener('submit', function (e) {
       e.preventDefault();
-      var originEl = document.getElementById('presence-origin');
+      var originSelectEl = presenceOriginEl || document.getElementById('presence-origin');
+      var originRadioEl = document.querySelector('input[name="origin"]:checked');
+      var egliseProvenanceEl = document.getElementById('presence-eglise-provenance');
       var impressionEl = document.getElementById('presence-impression');
       var attentesEl = document.getElementById('presence-attentes');
+      var originValue = '';
+      if (originRadioEl) {
+        originValue = String(originRadioEl.value || '').trim();
+      } else if (originSelectEl) {
+        originValue = String(originSelectEl.value || '').trim();
+      }
       var allFilled =
-        originEl &&
+        originValue !== '' &&
+        egliseProvenanceEl &&
         impressionEl &&
         attentesEl &&
-        String(originEl.value || '').trim() !== '' &&
+        String(egliseProvenanceEl.value || '').trim() !== '' &&
         String(impressionEl.value || '').trim() !== '' &&
         String(attentesEl.value || '').trim() !== '';
+      var autreIsValid = true;
+      if (originValue === 'autre' && presenceOriginAutreEl) {
+        var autreValue = String(presenceOriginAutreEl.value || '').trim();
+        var autreLineCount = countNonEmptyLines(autreValue);
+        autreIsValid = autreValue !== '' && autreLineCount <= 5;
+      }
       var html5Ok = presenceForm.checkValidity && presenceForm.checkValidity();
-      if (!allFilled || !html5Ok) {
+      if (!allFilled || !autreIsValid || !html5Ok) {
         showPresenceFormErrorModal();
         return;
       }
