@@ -17,6 +17,17 @@
     <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
   </button>
 
+  <button
+    type="button"
+    class="programme-live programme-live--floating"
+    id="programme-live-open"
+    aria-label="Ouvrir le live"
+    title="Live"
+    data-live-url="live.html"
+  >
+    <i class="fa-solid fa-circle-play" aria-hidden="true"></i>
+  </button>
+
   <main id="main" class="programme" role="main">
     <section class="programme-shell" aria-label="Programme de Full Adoration">
       <h1 class="sr-only">Programme</h1>
@@ -226,6 +237,33 @@
   <script src="js/app.js"></script>
   <script>
     (function () {
+      // Live : ouvre l'URL si renseignée (data-live-url)
+      var liveBtn = document.getElementById('programme-live-open');
+      if (liveBtn) {
+        liveBtn.addEventListener('click', function () {
+          var url = (liveBtn.getAttribute('data-live-url') || '').trim();
+          if (url) {
+            try {
+              window.open(url, '_blank', 'noopener,noreferrer');
+              return;
+            } catch (e1) {}
+          }
+          try {
+            if (typeof window.showAppModal === 'function') {
+              window.showAppModal({
+                title: 'Live',
+                message: 'Le live n’est pas encore disponible. Réessaie dans quelques instants.',
+                variant: 'info'
+              });
+              return;
+            }
+          } catch (e2) {}
+          try {
+            alert('Le live n’est pas encore disponible.');
+          } catch (e3) {}
+        });
+      }
+
       var shareBtn = document.getElementById('programme-share');
       if (!shareBtn) return;
 

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Full Adoration — Live">
+  <title>Full Adoration — Live</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/live.css">
+</head>
+<body>
+  <main class="live" role="main">
+    <section class="live-shell" aria-label="Live Full Adoration">
+      <header class="live-header">
+        <a class="live-back" href="programme.html" aria-label="Retour au programme">
+          <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+          <span>Retour</span>
+        </a>
+        <h1 class="live-title">Live</h1>
+        <div class="live-pill" aria-hidden="true">
+          <span class="live-dot"></span>
+          DIRECT
+        </div>
+      </header>
+
+      <div class="live-card">
+        <div class="live-card-top">
+          <label class="live-link-label" for="live-broadcast-url">Lien du direct (YouTube/Facebook)</label>
+          <input class="live-link" id="live-broadcast-url" type="url" inputmode="url" placeholder="Colle le lien du live ici…">
+
+          <div class="live-player" id="live-player" aria-label="Lecteur du direct">
+            <p class="live-empty" id="live-empty">Colle le lien du live pour afficher le direct ici.</p>
+          </div>
+
+          <div class="live-actions">
+            <button type="button" class="live-btn live-btn--primary" id="live-start">
+              <i class="fa-solid fa-circle-play" aria-hidden="true"></i>
+              Lancer
+            </button>
+            <button type="button" class="live-btn live-btn--secondary" id="live-copy" disabled>
+              <i class="fa-regular fa-copy" aria-hidden="true"></i>
+              Copier le lien
+            </button>
+          </div>
+          <div class="live-link-wrap" id="live-link-wrap" hidden>
+            <label class="live-link-label" for="live-link">Lien à partager</label>
+            <input class="live-link" id="live-link" type="text" readonly value="">
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js" crossorigin="anonymous"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      var startBtn = document.getElementById('live-start');
+      var copyBtn = document.getElementById('live-copy');
+      var linkWrap = document.getElementById('live-link-wrap');
+      var linkInput = document.getElementById('live-link');
+      var broadcastUrlInput = document.getElementById('live-broadcast-url');
+      var playerRoot = document.getElementById('live-player');
+      var emptyEl = document.getElementById('live-empty');
+      var hls = null;
+
+      var LIVE_URL_KEY = 'full-adoration-live-url';
+
+      function qs(name) {
+        try {
+          return new URLSearchParams(window.location.search).get(name);
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function buildShareUrl(url) {
+        // Supporte aussi file:// (origin = "null")
+        var base = window.location.href.split('?')[0];
+        return base + '?url=' + encodeURIComponent(url);
+      }
+
+      function isYouTubeUrl(url) {
+        return /youtube\.com|youtu\.be/i.test(url || '');
+      }
+
+      function isFacebookUrl(url) {
+        return /facebook\.com|fb\.watch/i.test(url || '');
+      }
+
+      function extractYouTubeId(url) {
+        try {
+          var u = new URL(url);
+          if (u.hostname.indexOf('youtu.be') !== -1) return (u.pathname || '').replace('/', '');
+          var v = u.searchParams.get('v');
+          if (v) return v;
+          var parts = (u.pathname || '').split('/').filter(Boolean);
+          var idx = parts.indexOf('live');
+          if (idx !== -1 && parts[idx + 1]) return parts[idx + 1];
+          var idx2 = parts.indexOf('embed');
+          if (idx2 !== -1 && parts[idx2 + 1]) return parts[idx2 + 1];
+          if (parts[0] === 'shorts' && parts[1]) return parts[1];
+        } catch (e) {}
+        return '';
+      }
+
+      function resetPlayer() {
+        if (hls) {
+          try { hls.destroy(); } catch (e) {}
+          hls = null;
+        }
+        if (playerRoot) playerRoot.innerHTML = '';
+        if (emptyEl) emptyEl.hidden = false;
+      }
+
+      function isHttpUrl(url) {
+        return /^https?:\/\//i.test(String(url || '').trim());
+      }
+
+      function showFileProtocolMessage() {
+        if (playerRoot) {
+          playerRoot.innerHTML =
+            '<p class="live-empty">' +
+            'Le lecteur ne peut pas fonctionner en mode <strong>file://</strong>.<br>' +
+            'Ouvre le site via <strong>http://localhost</strong> (serveur local), puis relance le live.' +
+            '</p>';
+        }
+        if (startBtn) startBtn.disabled = true;
+        if (copyBtn) copyBtn.disabled = true;
+        if (broadcastUrlInput) broadcastUrlInput.disabled = true;
+        if (linkWrap) linkWrap.hidden = true;
+      }
+
+      function mountPlayer(url) {
+        if (!playerRoot) return;
+        resetPlayer();
+        if (!url) return;
+        if (!isHttpUrl(url)) {
+          playerRoot.innerHTML = '<p class="live-empty">Colle un lien valide (https://) vers YouTube/Facebook.</p>';
+          return;
+        }
+
+        if (emptyEl) emptyEl.hidden = true;
+
+        if (isYouTubeUrl(url)) {
+          var id = extractYouTubeId(url);
+          if (!id) {
+            playerRoot.innerHTML = '<p class="live-empty">Lien YouTube invalide.</p>';
+            return;
+          }
+          var iframe = document.createElement('iframe');
+          iframe.className = 'live-frame';
+          iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+          iframe.referrerPolicy = 'no-referrer';
+          iframe.src =
+            'https://www.youtube-nocookie.com/embed/' +
+            encodeURIComponent(id) +
+            '?autoplay=1&mute=1&playsinline=1';
+          iframe.title = 'Live YouTube';
+          playerRoot.appendChild(iframe);
+          return;
+        }
+
+        if (isFacebookUrl(url)) {
+          // Facebook plugin : autoplay possible seulement si muet selon navigateur.
+          var fbIframe = document.createElement('iframe');
+          fbIframe.className = 'live-frame';
+          fbIframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+          fbIframe.referrerPolicy = 'no-referrer';
+          fbIframe.src =
+            'https://www.facebook.com/plugins/video.php?href=' +
+            encodeURIComponent(url) +
+            '&show_text=false&autoplay=true';
+          fbIframe.title = 'Live Facebook';
+          playerRoot.appendChild(fbIframe);
+          return;
+        }
+
+        var video = document.createElement('video');
+        video.className = 'live-video';
+        video.controls = true;
+        video.playsInline = true;
+        video.autoplay = true;
+        video.muted = false;
+
+        var lower = String(url).toLowerCase();
+        if (lower.indexOf('.m3u8') !== -1 && window.Hls && window.Hls.isSupported()) {
+          hls = new window.Hls({ lowLatencyMode: true });
+          hls.loadSource(url);
+          hls.attachMedia(video);
+          playerRoot.appendChild(video);
+          return;
+        }
+
+        video.src = url;
+        playerRoot.appendChild(video);
+      }
+
+      function setLiveUrl(url) {
+        var u = String(url || '').trim();
+        try {
+          if (u) localStorage.setItem(LIVE_URL_KEY, u);
+          else localStorage.removeItem(LIVE_URL_KEY);
+        } catch (e) {}
+
+        if (broadcastUrlInput) broadcastUrlInput.value = u;
+
+        if (u) {
+          if (linkWrap) linkWrap.hidden = false;
+          if (copyBtn) copyBtn.disabled = false;
+          if (linkInput) linkInput.value = buildShareUrl(u);
+          mountPlayer(u);
+        } else {
+          if (linkWrap) linkWrap.hidden = true;
+          if (copyBtn) copyBtn.disabled = true;
+          if (linkInput) linkInput.value = '';
+          resetPlayer();
+        }
+      }
+
+      function copyText(text) {
+        if (!text) return;
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text);
+            return;
+          }
+        } catch (e) {}
+        try {
+          linkInput.focus();
+          linkInput.select();
+          document.execCommand('copy');
+        } catch (e2) {}
+      }
+
+      var urlFromQuery = (qs('url') || '').trim();
+      var urlFromStorage = '';
+      try {
+        urlFromStorage = localStorage.getItem(LIVE_URL_KEY) || '';
+      } catch (e0) {}
+      setLiveUrl(urlFromQuery || urlFromStorage);
+
+      if (window.location && window.location.protocol === 'file:') {
+        showFileProtocolMessage();
+        return;
+      }
+
+      if (startBtn) {
+        startBtn.addEventListener('click', function () {
+          try {
+            var u = (broadcastUrlInput && broadcastUrlInput.value ? broadcastUrlInput.value : '').trim();
+            if (!u) {
+              if (broadcastUrlInput) broadcastUrlInput.focus();
+              return;
+            }
+            if (!isHttpUrl(u)) {
+              if (playerRoot) playerRoot.innerHTML = '<p class="live-empty">Le lien doit commencer par https://</p>';
+              if (broadcastUrlInput) broadcastUrlInput.focus();
+              return;
+            }
+            setLiveUrl(u);
+          } catch (e2) {
+          }
+        });
+      }
+
+      if (copyBtn) {
+        copyBtn.addEventListener('click', function () {
+          if (!linkInput) return;
+          copyText(linkInput.value);
+          try {
+            if (typeof window.showAppModal === 'function') {
+              window.showAppModal({
+                title: 'Lien',
+                message: 'Lien copié. Partage-le pour que les autres regardent le direct.',
+                variant: 'success'
+              });
+            }
+          } catch (e) {}
+        });
+      }
+
+    })();
+  </script>
+</body>
+</html>
+
