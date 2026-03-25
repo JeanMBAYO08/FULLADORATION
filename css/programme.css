@@ -802,7 +802,7 @@
 .programme-modal-card {
   position: relative;
   z-index: 1;
-  width: min(420px, 100%);
+  width: min(520px, 100%);
   max-width: 94vw;
   min-height: 0;
   border-radius: 20px;
@@ -843,7 +843,7 @@
   flex: 1;
   min-width: 0;
   display: grid;
-  grid-template-columns: 118px 118px;
+  grid-template-columns: 118px minmax(0, 1fr);
   gap: 0.75rem;
   align-items: stretch;
   justify-content: start;
@@ -881,13 +881,31 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 0.5rem;
   min-height: 132px;
+  position: relative;
   padding: 0.5rem 0.6rem 0.45rem;
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(255, 255, 255, 0.04);
+}
+
+.programme-modal-close--in-text {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+}
+
+.programme-modal-desc {
+  margin-top: 0.15rem;
+}
+
+.programme-modal-speaker-name {
+  overflow-wrap: anywhere;
 }
 
 .programme-modal-title {
@@ -1097,6 +1115,7 @@
   .programme-modal-card {
     max-height: min(90vh, calc(100dvh - 1.25rem));
     border-radius: 18px;
+    width: min(520px, 100%);
   }
 
   .programme-modal-header {
@@ -1105,7 +1124,7 @@
   }
 
   .programme-modal-intro {
-    grid-template-columns: 98px 98px;
+    grid-template-columns: 98px minmax(0, 1fr);
     gap: 0.6rem;
     align-items: stretch;
     justify-content: start;
@@ -1134,6 +1153,14 @@
     gap: 0.35rem;
     padding: 0.4rem 0.48rem 0.38rem;
     border-radius: 16px;
+  }
+
+  .programme-modal-close--in-text {
+    top: 0.25rem;
+    right: 0.25rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 11px;
   }
 
   .programme-modal-title-icon-wrap {
