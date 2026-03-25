@@ -29,6 +29,8 @@
 
       <div class="live-card">
         <div class="live-card-top">
+          <p class="live-status" id="live-status" hidden></p>
+
           <label class="live-link-label" for="live-broadcast-url">Lien du direct (YouTube/Facebook)</label>
           <input class="live-link" id="live-broadcast-url" type="url" inputmode="url" placeholder="Colle le lien du live ici…">
 
@@ -36,7 +38,16 @@
             <p class="live-empty" id="live-empty">Colle le lien du live pour afficher le direct ici.</p>
           </div>
 
+          <a class="live-open-external" id="live-open-external" href="#" target="_blank" rel="noopener noreferrer" hidden>
+            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+            Ouvrir sur la plateforme
+          </a>
+
           <div class="live-actions">
+            <button type="button" class="live-btn live-btn--secondary" id="live-camera">
+              <i class="fa-solid fa-camera" aria-hidden="true"></i>
+              Commencer le live
+            </button>
             <button type="button" class="live-btn live-btn--primary" id="live-start">
               <i class="fa-solid fa-circle-play" aria-hidden="true"></i>
               Lancer
@@ -61,13 +72,17 @@
       'use strict';
 
       var startBtn = document.getElementById('live-start');
+      var cameraBtn = document.getElementById('live-camera');
       var copyBtn = document.getElementById('live-copy');
       var linkWrap = document.getElementById('live-link-wrap');
       var linkInput = document.getElementById('live-link');
       var broadcastUrlInput = document.getElementById('live-broadcast-url');
       var playerRoot = document.getElementById('live-player');
       var emptyEl = document.getElementById('live-empty');
+      var statusEl = document.getElementById('live-status');
+      var externalLinkEl = document.getElementById('live-open-external');
       var hls = null;
+      var cameraStream = null;
 
       var LIVE_URL_KEY = 'full-adoration-live-url';
 
@@ -114,8 +129,69 @@
           try { hls.destroy(); } catch (e) {}
           hls = null;
         }
+        if (cameraStream) {
+          try {
+            cameraStream.getTracks().forEach(function (t) { t.stop(); });
+          } catch (e0) {}
+          cameraStream = null;
+        }
         if (playerRoot) playerRoot.innerHTML = '';
         if (emptyEl) emptyEl.hidden = false;
+        if (externalLinkEl) externalLinkEl.hidden = true;
+      }
+
+      function mountCameraPreview() {
+        if (!playerRoot) return;
+        resetPlayer();
+        if (emptyEl) emptyEl.hidden = true;
+        if (externalLinkEl) externalLinkEl.hidden = true;
+
+        if (statusEl) {
+          statusEl.hidden = false;
+          statusEl.textContent = 'Caméra: demande d’autorisation…';
+        }
+
+        var video = document.createElement('video');
+        video.className = 'live-video';
+        video.autoplay = true;
+        video.playsInline = true;
+        video.muted = true; // autoplay sans blocage
+        video.controls = false;
+        playerRoot.appendChild(video);
+
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          playerRoot.innerHTML = '<p class="live-empty">Caméra non supportée sur ce navigateur.</p>';
+          if (statusEl) statusEl.textContent = 'Caméra: non supportée sur ce navigateur.';
+          return;
+        }
+
+        navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+          .then(function (stream) {
+            cameraStream = stream;
+            try {
+              video.srcObject = stream;
+            } catch (e1) {
+              try { video.src = URL.createObjectURL(stream); } catch (e2) {}
+            }
+            try {
+              var p = video.play && video.play();
+              if (p && typeof p.catch === 'function') p.catch(function () {});
+            } catch (e3) {}
+            if (statusEl) statusEl.textContent = 'Caméra: active.';
+          })
+          .catch(function (err) {
+            var name = (err && err.name) ? String(err.name) : 'Erreur';
+            var msg = (err && err.message) ? String(err.message) : '';
+            playerRoot.innerHTML =
+              '<p class="live-empty">' +
+              'Impossible d’ouvrir la caméra.<br>' +
+              '<strong>' + name + '</strong>' +
+              (msg ? (': ' + msg) : '') +
+              '<br><br>' +
+              'Conseils iPhone: ouvre le lien dans Safari/Chrome (pas dans le navigateur intégré WhatsApp/Instagram), puis autorise la caméra.' +
+              '</p>';
+            if (statusEl) statusEl.textContent = 'Caméra: ' + name + (msg ? (' — ' + msg) : '');
+          });
       }
 
       function isHttpUrl(url) {
@@ -146,13 +222,13 @@
         }
 
         if (emptyEl) emptyEl.hidden = true;
+        if (externalLinkEl) {
+          externalLinkEl.hidden = false;
+          externalLinkEl.href = url;
+        }
 
-        if (isYouTubeUrl(url)) {
-          var id = extractYouTubeId(url);
-          if (!id) {
-            playerRoot.innerHTML = '<p class="live-empty">Lien YouTube invalide.</p>';
-            return;
-          }
+        function mountYouTubeById(id) {
+          if (!id) return false;
           var iframe = document.createElement('iframe');
           iframe.className = 'live-frame';
           iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
@@ -162,8 +238,41 @@
             encodeURIComponent(id) +
             '?autoplay=1&mute=1&playsinline=1';
           iframe.title = 'Live YouTube';
+          iframe.loading = 'lazy';
           playerRoot.appendChild(iframe);
-          return;
+          return true;
+        }
+
+        if (isYouTubeUrl(url)) {
+          var id = extractYouTubeId(url);
+          if (mountYouTubeById(id)) return;
+
+          // Certains liens (ex: https://www.youtube.com/@handle/live) n'ont pas d'ID.
+          // On tente de résoudre via oEmbed (si CORS autorise).
+          try {
+            playerRoot.innerHTML = '<p class="live-empty">Chargement du live…</p>';
+            fetch('https://www.youtube.com/oembed?format=json&url=' + encodeURIComponent(url))
+              .then(function (r) { return r && r.ok ? r.json() : null; })
+              .then(function (data) {
+                if (!data || !data.html) throw new Error('oembed');
+                var m = String(data.html).match(/src=\"([^\"]+)\"/i);
+                if (!m || !m[1]) throw new Error('src');
+                var src = m[1];
+                // ex: https://www.youtube.com/embed/VIDEO_ID?...
+                var mm = String(src).match(/\/embed\/([a-zA-Z0-9_-]{6,})/);
+                var vid = mm && mm[1] ? mm[1] : '';
+                resetPlayer();
+                if (mountYouTubeById(vid)) return;
+                playerRoot.innerHTML = '<p class="live-empty">Impossible de lire ce lien YouTube dans l’app. Utilise un lien YouTube “Partager” (avec un ID).</p>';
+              })
+              .catch(function () {
+                playerRoot.innerHTML = '<p class="live-empty">Lien YouTube non reconnu. Essaie un lien de type https://youtu.be/VIDEO_ID ou https://www.youtube.com/watch?v=VIDEO_ID</p>';
+              });
+            return;
+          } catch (eYt) {
+            playerRoot.innerHTML = '<p class="live-empty">Lien YouTube non reconnu.</p>';
+            return;
+          }
         }
 
         if (isFacebookUrl(url)) {
@@ -177,6 +286,7 @@
             encodeURIComponent(url) +
             '&show_text=false&autoplay=true';
           fbIframe.title = 'Live Facebook';
+          fbIframe.loading = 'lazy';
           playerRoot.appendChild(fbIframe);
           return;
         }
@@ -250,6 +360,15 @@
         return;
       }
 
+      if (statusEl) {
+        statusEl.hidden = false;
+        try {
+          statusEl.textContent = 'Mode: ' + window.location.protocol + '//' + window.location.host;
+        } catch (e1) {
+          statusEl.textContent = 'Mode: ' + (window.location && window.location.protocol ? window.location.protocol : 'inconnu');
+        }
+      }
+
       if (startBtn) {
         startBtn.addEventListener('click', function () {
           try {
@@ -266,6 +385,12 @@
             setLiveUrl(u);
           } catch (e2) {
           }
+        });
+      }
+
+      if (cameraBtn) {
+        cameraBtn.addEventListener('click', function () {
+          mountCameraPreview();
         });
       }
 

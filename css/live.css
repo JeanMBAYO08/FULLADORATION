@@ -223,6 +223,46 @@
   color: #1a1916;
 }
 
+.live-status {
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 0.82rem;
+  opacity: 0.85;
+}
+
+[data-theme="light"] .live-status {
+  border-color: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.live-open-external {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: fit-content;
+  text-decoration: none;
+  color: var(--color-text);
+  opacity: 0.9;
+  font-weight: 700;
+  padding: 0.55rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.live-open-external:hover {
+  opacity: 1;
+}
+
+[data-theme="light"] .live-link {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(0, 0, 0, 0.12);
+  color: #1a1916;
+}
+
 .live-hint {
   margin: 0;
   font-size: 0.82rem;
